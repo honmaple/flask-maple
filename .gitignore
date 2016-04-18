@@ -1,0 +1,6 @@
+venv/
+**/__pycache__/
+*.swp
+*.log
+*.pyc
+**/.webassets-cache/
