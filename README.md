@@ -20,6 +20,14 @@ Or alternatively, you can download the repository and install manually by doing:
     MapleCaptcha(app)
     MapleBootstrap(app)
     
+    # or
+    maple = MapleBootstrap()
+    maple.init_app(app)
+    
+If you want add css file or js file with flask-assets
+
+    maple = MapleBootstrap(css=('style/xxx.css',),js=('style/xxx.js',))
+    
 Templates:
 
     {% extends 'bootstrap/base.html' %}

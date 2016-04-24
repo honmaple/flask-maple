@@ -1,5 +1,6 @@
 venv/
 dist/
+example/flask_maple
 README
 **/__pycache__/
 *.egg-info

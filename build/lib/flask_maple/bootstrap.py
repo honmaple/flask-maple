@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update: 星期五 2016-4-22 19:7:32 (CST)
+# Last Update: 星期日 2016-4-24 18:52:50 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -16,10 +16,12 @@ from flask_wtf.csrf import CsrfProtect
 
 
 class MapleBootstrap(object):
-    def __init__(self, app=None):
+
+    def __init__(self, app=None, js=None, css=None):
+        self.js = js
+        self.css = css
         if app is not None:
             self.app = app
-            self.assets = None
             self.init_app(self.app)
         else:
             self.app = None
@@ -46,7 +48,6 @@ class MapleBootstrap(object):
         app.register_blueprint(blueprint)
 
     def assets(self, app):
-        assets = Environment(app)
         bundles = {
             'home_js': Bundle('bootstrap/js/jquery.min.js',
                               'bootstrap/js/bootstrap.min.js',
@@ -58,14 +59,15 @@ class MapleBootstrap(object):
                                output='bootstrap/assets/home.css',
                                filters='cssmin')
         }
-        if self.assets is not None:
-            bundles = bundles.update(self.assets)
-            assets.register(bundles)
-        else:
-            assets.register(bundles)
+        if self.css:
+            bundles['home_css'].contents = bundles[
+                'home_css'].contents + self.css
+        if self.js:
+            bundles['home_css'].contents = bundles[
+                'home_js'].contents + self.js
 
-    def add_assets(self, asserts=None):
-        self.assets = asserts
+        assets = Environment(app)
+        assets.register(bundles)
 
     def filters(self, app):
         def show_footer(author=self.author_name):
