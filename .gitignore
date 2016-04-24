@@ -1,5 +1,6 @@
 venv/
 dist/
+build/
 example/flask_maple
 README
 **/__pycache__/
