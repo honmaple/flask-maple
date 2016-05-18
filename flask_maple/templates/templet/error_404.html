@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Document</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style type=text/css>
+         html {
+             display: table;
+             font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+             font-style:normal;
+             background-color: #f3f3f3;
+             color: #888;
+             height: 100%;
+             width: 100%;
+         }
+         body {
+             background: url('{{ url_for('bootstrap.static',filename='images/ship.png')}}') no-repeat center right;
+             display: table-cell;
+             padding:14% 18%;
+         }
+         h1 {
+             color: #555;
+             font-size: 2em;
+         }
+        </style>
+    </head>
+    <body>
+        <h1>HTTP 404······</h1>
+        <h3>这个页面可能已经飞走了</h3>
+        <span><a href="{{ request.url_root }}">返回首页</a></span>
+    </body>
+</html>

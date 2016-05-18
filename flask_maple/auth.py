@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期三 2016-5-18 13:22:14 (CST)
+# Last Update:星期三 2016-5-18 16:25:5 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -202,20 +202,17 @@ class Auth(object):
     @login_required
     @check_time
     def confirm_email(self):
-        if request.method == "POST":
-            if current_user.is_confirmed:
-                return jsonify(
-                    judge=False,
-                    error=_(
-                        'Your account has been confirmed,don\'t need again'))
-            else:
-                self.register_email(current_user.email)
-                self.email_models()
-                return jsonify(
-                    judge=True,
-                    error=_('An email has been sent to your.Please receive'))
+        if current_user.is_confirmed:
+            return jsonify(
+                judge=False,
+                error=_(
+                    'Your account has been confirmed,don\'t need again'))
         else:
-            return redirect('/')
+            self.register_email(current_user.email)
+            self.email_models()
+            return jsonify(
+                judge=True,
+                error=_('An email has been sent to your.Please receive'))
 
     def confirm_models(self, user):
         user.is_confirmed = True
