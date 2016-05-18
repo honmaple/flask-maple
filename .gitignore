@@ -1,7 +1,6 @@
 venv/
 dist/
 build/
-example/
 README
 **/__pycache__/
 *.egg-info
@@ -9,4 +8,6 @@ README
 *.log
 *.pyc
 **/.webassets-cache/
-example/run.py
+example/migrations/
+example/test.db
+example/flask_maple
