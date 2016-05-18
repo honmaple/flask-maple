@@ -9,3 +9,4 @@ README
 *.log
 *.pyc
 **/.webassets-cache/
+example/run.py
