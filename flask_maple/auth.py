@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期三 2016-5-18 16:25:5 (CST)
+# Last Update:星期三 2016-5-18 20:45:24 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -47,7 +47,9 @@ def check_time(func):
             pass
         if datetime.now() < current_user.send_email_time + timedelta(
                 seconds=360):
-            return jsonify(judge=False, error="你获取的验证链接还未过期，请尽快验证")
+            return jsonify(judge=False,
+                           error="Your confirm link have not out of time," +
+                           "Please confirm your email in time")
         return func(*args, **kwargs)
 
     return decorator
@@ -205,8 +207,7 @@ class Auth(object):
         if current_user.is_confirmed:
             return jsonify(
                 judge=False,
-                error=_(
-                    'Your account has been confirmed,don\'t need again'))
+                error=_('Your account has been confirmed,don\'t need again'))
         else:
             self.register_email(current_user.email)
             self.email_models()

@@ -11,11 +11,10 @@ from flask_mail import Message
 from threading import Thread
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
-from flask_mail import Mail
 
 
 class MapleMail(object):
-    def __init__(self, app,mail):
+    def __init__(self, app, mail):
         self.app = app
         self.mail = mail
 

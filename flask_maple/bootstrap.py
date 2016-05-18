@@ -6,17 +6,15 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期三 2016-5-18 12:55:38 (CST)
-#          By: jiang
+# Last Update:星期三 2016-5-18 20:48:6 (CST)
+#          By: jianglin
 # Description:
 # **************************************************************************
 from flask import Blueprint
 from flask_assets import Environment, Bundle
-from flask_wtf.csrf import CsrfProtect
 
 
 class MapleBootstrap(object):
-
     def __init__(self, app=None, js=None, css=None):
         self.js = js
         self.css = css
@@ -31,10 +29,6 @@ class MapleBootstrap(object):
         self.blueprint(app)
         self.assets(app)
         self.filters(app)
-
-    # def csrf(self, app):
-    #     csrf = CsrfProtect()
-    #     csrf.init_app(app)
 
     def blueprint(self, app):
         blueprint = Blueprint(
