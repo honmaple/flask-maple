@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update: 星期日 2016-4-24 19:13:11 (CST)
+# Last Update:星期三 2016-5-18 12:55:38 (CST)
 #          By: jiang
 # Description:
 # **************************************************************************
@@ -28,14 +28,13 @@ class MapleBootstrap(object):
 
     def init_app(self, app):
         self.author_name = app.config.get('AUTHOR_NAME', 'honmaple')
-        self.csrf(app)
         self.blueprint(app)
         self.assets(app)
         self.filters(app)
 
-    def csrf(self, app):
-        csrf = CsrfProtect()
-        csrf.init_app(app)
+    # def csrf(self, app):
+    #     csrf = CsrfProtect()
+    #     csrf.init_app(app)
 
     def blueprint(self, app):
         blueprint = Blueprint(
@@ -52,11 +51,12 @@ class MapleBootstrap(object):
             'home_js': Bundle('bootstrap/js/jquery.min.js',
                               'bootstrap/js/bootstrap.min.js',
                               'bootstrap/js/honmaple.js',
-                              output='bootstrap/assets/home.js',
+                              'bootstrap/js/login.js',
+                              output='assets/home.js',
                               filters='jsmin'),
             'home_css': Bundle('bootstrap/css/bootstrap.min.css',
                                'bootstrap/css/honmaple.css',
-                               output='bootstrap/assets/home.css',
+                               output='assets/home.css',
                                filters='cssmin')
         }
         if self.css:

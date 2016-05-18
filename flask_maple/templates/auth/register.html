@@ -1,0 +1,5 @@
+{% extends 'maple/base.html' %}
+{% import 'maple/auth.html' as auth %}
+{% block main -%}
+{{ auth.register(form) }}
+{% endblock -%}

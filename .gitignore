@@ -1,7 +1,7 @@
 venv/
 dist/
 build/
-example/flask_maple
+example/
 README
 **/__pycache__/
 *.egg-info

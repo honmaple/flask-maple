@@ -1,0 +1,109 @@
+{% macro error() -%}
+<div class="alert alert-info" id="showerror" style="padding:8px;">
+    <button type="button" class="close" id="hide">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <ul>
+        <li id="error"></li>
+    </ul>
+</div>
+{%- endmacro %}
+
+{% macro forget(form) -%}
+<table align="center" style="font-size:14px;">
+    <tr>
+        <td colspan="2">
+            {{ error() }}
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-right:5px;">{{ form.confirm_email.label }} </td>
+        <td style="padding-bottom:10px;"> {{ form.confirm_email(class="form-control",placeholder="Email",style="width:240px;") }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.captcha.label }}</td>
+        <td colspan="2" style="padding-bottom:10px;">
+            {% include 'maple/captcha.html' %}
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td style="padding-bottom:10px;">
+            <button type="button" class="btn btn-primary" id="forget">{{_('confirm')}}</button>
+        </td>
+    </tr>
+</table>
+{%- endmacro %}
+
+{% macro login(form) -%}
+<table align="center" style="font-size:14px;">
+    <tr>
+        <td colspan="2">
+            {{ error() }}
+        </td>
+    </tr>
+    <tr>
+        <td>{{ form.username.label }}</td>
+        <td style="padding-bottom:10px;"> {{ form.username(class="form-control",placeholder="Username",style="width:240px") }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password.label }}</td>
+        <td style="padding-bottom:10px;">{{ form.password(class="form-control",placeholder="Password",style="width:240px") }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.captcha.label }}</td>
+        <td colspan="2" style="padding-bottom:10px;">
+            {% include 'maple/captcha.html' %}
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td style="padding-bottom:10px;">
+            <button type="button" class="btn btn-primary" id="login">{{_('login')}}</button>
+            <a href="{{ url_for('auth.forget') }}">{{_('forget password?')}}</a>
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>{{ form.remember() }} {{ form.remember.label}}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><a href="{{ url_for('auth.register') }}">{{ _('not register')}}</a></td>
+    </tr>
+</table>
+{%- endmacro %}
+
+{% macro register(form) -%}
+<table align="center" style="font-size:14px;">
+    <tr>
+        <td colspan="2">
+            {{ error() }}
+        </td>
+    </tr>
+    <tr>
+        <td>{{ form.username.label }}</td>
+        <td style="padding-bottom:10px;"> {{ form.username(class="form-control",placeholder="Username",style="width:240px") }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.email.label }}</td>
+        <td style="padding-bottom:10px;"> {{ form.email(class="form-control",placeholder="Email",style="width:240px") }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password.label }}</td>
+        <td style="padding-bottom:10px;">{{ form.password(class="form-control",placeholder="Password",style="width:240px") }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.captcha.label }}</td>
+        <td colspan="2" style="padding-bottom:10px;">
+            {% include 'maple/captcha.html' %}
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td style="padding-bottom:10px;">
+            <button type="button" class="btn btn-primary" id="register">{{_('register')}}</button>
+        </td>
+    </tr>
+</table>
+{%- endmacro %}

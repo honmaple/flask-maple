@@ -1,0 +1,52 @@
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> {% block title %}{%- endblock -%}</title>
+        <script type="text/javascript" charset="utf-8">
+         var g = {
+             csrftoken: "{{ csrf_token() }}"
+         };
+         var url = {
+             index: "{{ request.args.get('next') or '/' }}",
+             login: "{{ url_for('auth.login') }}",
+             forget: "{{ url_for('auth.forget')}}",
+             register: "{{ url_for('auth.register') }}",
+             captcha: "{{ url_for('captcha')}}"
+         };
+        </script>
+        {%- block script %}
+        {%- assets "home_js" -%}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+        {%- endassets %}
+        {%- endblock -%}
+        {% block style %}
+        {%- assets "home_css" %}
+        <link rel="stylesheet" href="{{ ASSET_URL }}" />
+        {%- endassets %}
+        <style>
+         @font-face {
+             font-family: 'Glyphicons Halflings';
+             src: url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.eot')}}');
+             src: url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.eot?#iefix')}}') format('embedded-opentype'),
+             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.woff2')}}') format('woff2'),
+             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.woff')}}') format('woff'),
+             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.ttf')}}') format('truetype'),
+             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular')}}') format('svg');
+         }
+        </style>
+        {%- endblock %}
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="main">
+                {% block main -%}{%- endblock -%}
+            </div>
+        </div>
+        <div class="footer text-center">
+            {{ show_footer() }}
+        </div>
+    </body>
+</html>
+
