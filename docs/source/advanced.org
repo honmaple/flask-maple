@@ -1,0 +1,119 @@
+* Advanced
+
+** Bootstrap
+   You can add you .js file or .css file with flask-assets
+   #+BEGIN_SRC python
+   maple = MapleBootstrap(css=('style/xxx.css',),js=('style/xxx.js',))
+   maple.init_app(app)
+   #+END_SRC
+
+   or you can add js or css in *templates*
+   #+BEGIN_SRC html
+{% block style -%}
+{{super()}}
+You css file
+{% endblock -%}
+
+{% block script -%}
+{{super()}}
+You js file
+{% endblock -%}
+   #+END_SRC
+
+   other *block*
+   #+BEGIN_SRC html
+{% block title -%}
+{% endblock -%}
+   #+END_SRC
+
+** Error
+   You can custom you template for error
+
+   #+BEGIN_SRC html
+templates/templet/error_404.html
+templates/templet/error_403.html
+templates/templet/error_500.html
+   #+END_SRC
+
+** Auth
+   *Auth* api
+   #+BEGIN_SRC python
+    Auth(app=None, db=none, mail=none, user_model=none, use_principal=false,
+            login_form=loginform, register_form=registerform, forget_form=forgetpasswordform):
+   #+end_src
+
+   *db*
+   #+BEGIN_SRC python
+db = SQLAlchemy(app)
+app = Flask(__name__)
+app.config.from_object(Config)
+db = SQLAlchemy(app)
+maplec = MapleCaptcha(app)
+mapleb = MapleBootstrap(app)
+mail = Mail(app)
+babel = Babel(app)
+   #+END_SRC
+
+   *mail*
+   #+BEGIN_SRC python
+mail = Mail(app)
+   #+END_SRC
+
+   *user_models*
+   #+BEGIN_SRC python
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(120), unique=True)
+
+    def __repr__(self):
+        return '<User %r>' % self.name
+
+    @staticmethod
+    def set_password(password):
+        pw_hash = generate_password_hash(password)
+        return pw_hash
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+   #+END_SRC
+
+   *use_principal*
+   if you use flask-principal,then set /use_principal = True/
+
+   *form*
+   You can customize form
+
+   *Custom Model*
+*** register_models
+    #+BEGIN_SRC python
+    from flask_maple import Auth
+    class MyAuth(Auth):
+        def register_models(self, form):
+            user = self.User()
+            user.username = form.username.data
+            user.password = user.set_password(form.password.data)
+            user.email = form.email.data
+            self.db.session.add(user)
+            self.db.session.commit()
+            return user
+    #+END_SRC
+
+*** confirm_models
+    #+BEGIN_SRC python
+    class MyAuth(Auth):
+        def confirm_models(self, user):
+            user.is_confirmed = True
+            user.confirmed_time = datetime.now()
+            user.roles = 'writer'
+            self.db.session.commit()
+    #+END_SRC
+
+*** email_models
+    #+BEGIN_SRC python
+class MyAuth(Auth):
+    def email_models(self):
+        current_user.send_email_time = datetime.now()
+        self.db.session.commit()
+    #+END_SRC

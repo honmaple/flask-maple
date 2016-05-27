@@ -1,0 +1,94 @@
+* Introduction To Flask-Maple
+
+** Installation
+   To install Flask-Maple:
+   #+BEGIN_SRC python
+pip install flask-maple
+   #+END_SRC
+
+   Or alternatively, you can download the repository and install manually by doing:
+   #+BEGIN_SRC python
+git clone git@github.com:honmaple/flask-maple.git
+cd flask-maple
+python setup.py install
+   #+END_SRC
+
+** Bootstrap
+   You need register csrf before use boostrap
+   #+BEGIN_SRC python
+   from flask import Flask
+   from flask_maple import MapleBootstrap
+   from flask_wtf.csrf import CsrfProtect
+
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'hard to guess'
+    csrf = CsrfProtect()
+    csrf.init_app(app)
+    maple = MapleBoostrap()
+    maple.init_app(app)
+    # or MapleBootstrap(app)
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+    if __name__ == '__main__':
+        app.run()
+        print(app.url_map)
+   #+END_SRC
+
+   *Templates:*
+   #+BEGIN_SRC html
+{% extends 'maple/base.html' %}
+{% block main -%}
+<button class="btn btn-primary">asd</button>
+<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+{% endblock -%}
+   #+END_SRC
+
+   *Config:*
+   #+BEGIN_SRC python
+    AUTHOR_NAME = "This will show you name at html footer"
+   #+END_SRC
+
+** Captcha
+   Please install Pillow before use captcha
+   #+BEGIN_SRC python
+    pip install pillow
+   #+END_SRC
+   *Usage*:
+   #+BEGIN_SRC python
+    from flask_maple import MapleCaptcha
+    captcha = MapleCaptcha(app)
+   #+END_SRC
+   Then you can visit [[http://127.0.0.1/captcha]]
+
+   *Config*:
+   #+BEGIN_SRC python
+    CAPTCHA_URL = "The captcha url,default 'captcha'"
+   #+END_SRC
+
+** Error
+   You don't register app.errorhandler if you use error extension
+
+   *Usage*:
+   #+BEGIN_SRC python
+from flask_maple import Error
+error = Error(app)
+   #+END_SRC
+   This extension provides some simple error view
+   #+BEGIN_SRC python
+   404
+   403
+   500
+   #+END_SRC
+
+** Login
+   It's easy to use login
+
+   *Usage*:
+   #+BEGIN_SRC python
+   from flask_maple import Auth
+   auth = Auth(app, db=db, mail=mail, user_model=User)
+   #+END_SRC
+   Then you can visit [[http://127.0.0.1:5000/login]]

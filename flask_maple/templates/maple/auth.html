@@ -1,3 +1,15 @@
+{% macro base() -%}
+<script type="text/javascript" charset="utf-8">
+ var url = {
+     index: "{{ request.args.get('next') or '/' }}",
+     login: "{{ url_for('auth.login') }}",
+     forget: "{{ url_for('auth.forget')}}",
+     register: "{{ url_for('auth.register') }}",
+     captcha: "{{ url_for('captcha')}}"
+ };
+</script>
+{%- endmacro %}
+
 {% macro error() -%}
 <div class="alert alert-info" id="showerror" style="padding:8px;">
     <button type="button" class="close" id="hide">

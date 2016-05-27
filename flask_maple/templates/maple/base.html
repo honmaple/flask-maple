@@ -8,13 +8,6 @@
          var g = {
              csrftoken: "{{ csrf_token() }}"
          };
-         var url = {
-             index: "{{ request.args.get('next') or '/' }}",
-             login: "{{ url_for('auth.login') }}",
-             forget: "{{ url_for('auth.forget')}}",
-             register: "{{ url_for('auth.register') }}",
-             captcha: "{{ url_for('captcha')}}"
-         };
         </script>
         {%- block script %}
         {%- assets "home_js" -%}

@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 23:43:21 (CST)
-# Last Update:星期三 2016-5-18 20:48:29 (CST)
+# Last Update:星期五 2016-5-27 19:6:31 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -107,7 +107,7 @@ def user_loader(id):
 
 @app.route('/')
 def index():
-    abort(403)
+    abort(500)
     return render_template('index.html')
 
 

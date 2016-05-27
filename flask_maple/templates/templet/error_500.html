@@ -23,11 +23,37 @@
              color: #555;
              font-size: 2em;
          }
+         .btn {
+             display: inline-block;
+             padding: 6px 12px;
+             margin-bottom: 0;
+             font-size: 14px;
+             font-weight: 400;
+             line-height: 1.42857143;
+             text-align: center;
+             white-space: nowrap;
+             vertical-align: middle;
+             -ms-touch-action: manipulation;
+             touch-action: manipulation;
+             cursor: pointer;
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
+             user-select: none;
+             background-image: none;
+             border: 1px solid transparent;
+             border-radius: 4px;
+         }
+         .btn-success {
+             color: #fff;
+             background-color: #333;
+             border-color: #eee;
+         }
         </style>
     </head>
     <body>
         <h1>HTTP 500······</h1>
         <h3>网站发生了一些错误,管理员正在修复中</h3>
-        <span><a href="{{ request.url_root }}">返回首页</a></span>
+        <span> <button class="btn btn-success" type="button" onclick="window.location.href='{{ request.url_root}}'">返回首页</button></span>
     </body>
 </html>
