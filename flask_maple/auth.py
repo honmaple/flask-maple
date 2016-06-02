@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期四 2016-5-19 15:30:40 (CST)
+# Last Update:星期四 2016-6-2 12:5:29 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -45,11 +45,12 @@ def check_time(func):
     def decorator(*args, **kwargs):
         if current_user.send_email_time is None:
             pass
-        if datetime.now() < current_user.send_email_time + timedelta(
-                seconds=360):
-            return jsonify(judge=False,
-                           error="Your confirm link have not out of time," +
-                           "Please confirm your email in time")
+        else:
+            if datetime.now() < current_user.send_email_time + timedelta(
+                    seconds=360):
+                return jsonify(judge=False,
+                               error="Your confirm link have not out of time,"
+                               + "Please confirm your email in time")
         return func(*args, **kwargs)
 
     return decorator
@@ -218,7 +219,6 @@ class Auth(object):
     def confirm_models(self, user):
         user.is_confirmed = True
         user.confirmed_time = datetime.now()
-        user.roles = 'writer'
         self.db.session.commit()
 
     def email_models(self):

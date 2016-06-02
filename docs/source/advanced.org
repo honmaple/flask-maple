@@ -3,28 +3,27 @@
 ** Bootstrap
    You can add you .js file or .css file with flask-assets
    #+BEGIN_SRC python
-   maple = MapleBootstrap(css=('style/xxx.css',),js=('style/xxx.js',))
+   maple = Bootstrap(css=('style/xxx.css',),js=('style/xxx.js',))
    maple.init_app(app)
    #+END_SRC
 
-   or you can add js or css in *templates*
+   Or you can add js or css in *templates*
    #+BEGIN_SRC html
-{% block style -%}
-{{super()}}
-You css file
-{% endblock -%}
-
-{% block script -%}
-{{super()}}
-You js file
-{% endblock -%}
+    {% block style -%}
+    {{super()}}
+    You css file
+    {% endblock -%}
+    {% block script -%}
+    {{super()}}
+    You js file
+    {% endblock -%}
    #+END_SRC
 
-   other *block*
-   #+BEGIN_SRC html
-{% block title -%}
-{% endblock -%}
-   #+END_SRC
+   Anyway,If you want use maple auth extension,you need set
+    #+BEGIN_SRC python
+    Bootstrap(app,use_auth=True)
+    #+END_SRC
+
 
 ** Error
    You can custom you template for error

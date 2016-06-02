@@ -1,0 +1,48 @@
+* Auth
+** Custom model
+   You custom model if you need more when register or confirm email
+*** register_models
+    #+BEGIN_SRC python
+    from flask_maple import Auth
+    class MyAuth(Auth):
+        def register_models(self, form):
+            user = self.User()
+            user.username = form.username.data
+            user.password = user.set_password(form.password.data)
+            user.email = form.email.data
+            self.db.session.add(user)
+            self.db.session.commit()
+            return user
+    #+END_SRC
+*** confirm_models
+    #+BEGIN_SRC python
+    class MyAuth(Auth):
+        def confirm_models(self, user):
+            user.is_confirmed = True
+            user.confirmed_time = datetime.now()
+            self.db.session.commit()
+    #+END_SRC
+
+*** email_models
+    #+BEGIN_SRC python
+    class MyAuth(Auth):
+        def email_models(self):
+            current_user.send_email_time = datetime.now()
+            self.db.session.commit()
+    #+END_SRC
+
+** Custom form
+   You can add custom form when register Auth
+   #+BEGIN_SRC python
+   Auth(app, db=db, mail=mail, user_model=User,
+        login_form=loginform,
+        register_form=registerform,
+        forget_form=forgetpasswordform)
+   #+end_src
+
+   *template*
+   #+BEGIN_SRC python
+   templates/auth/login.html
+   templates/auth/register.html
+   templates/auth/forget.html
+   #+END_SRC

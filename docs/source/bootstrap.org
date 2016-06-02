@@ -1,0 +1,47 @@
+* Bootstrap
+
+** Add css or js file
+   You can add you .js file or .css file with flask-assets
+   #+BEGIN_SRC python
+   maple = Bootstrap(css=('style/xxx.css',),js=('style/xxx.js',))
+   maple.init_app(app)
+   #+END_SRC
+
+   Or you can add js or css in *templates*
+   #+BEGIN_SRC html
+    {% block style -%}
+    {{super()}}
+    You css file
+    {% endblock -%}
+    {% block script -%}
+    {{super()}}
+    You js file
+    {% endblock -%}
+   #+END_SRC
+
+** Use auth extension
+   If you want use maple auth extension,you need set
+   #+BEGIN_SRC python
+    Bootstrap(app,use_auth=True)
+   #+END_SRC
+
+   But before it,you need register csrf,beacuse ajax need csrf.
+   #+BEGIN_SRC python
+    from flask_wtf.csrf import CsrfProtect
+    csrf = CsrfProtect()
+    csrf.init_app(app)
+   #+END_SRC
+
+** Other block
+   #+BEGIN_SRC html
+    {% block title -%}
+    {% endblock -%}
+   #+END_SRC
+
+**  Custom footer
+   The footer file in *templates/maple/footer.html*,you can custom it.
+   #+BEGIN_SRC html
+<div class="footer text-center">
+custom content
+</div>
+   #+END_SRC

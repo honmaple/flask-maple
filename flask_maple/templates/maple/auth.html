@@ -1,5 +1,8 @@
 {% macro base() -%}
 <script type="text/javascript" charset="utf-8">
+ var g = {
+     csrftoken: "{{ csrf_token() }}"
+ };
  var url = {
      index: "{{ request.args.get('next') or '/' }}",
      login: "{{ url_for('auth.login') }}",
@@ -11,6 +14,7 @@
 {%- endmacro %}
 
 {% macro error() -%}
+{% if use_auth %}
 <div class="alert alert-info" id="showerror" style="padding:8px;">
     <button type="button" class="close" id="hide">
         <span aria-hidden="true">&times;</span>
@@ -19,6 +23,7 @@
         <li id="error"></li>
     </ul>
 </div>
+{% endif %}
 {%- endmacro %}
 
 {% macro forget(form) -%}

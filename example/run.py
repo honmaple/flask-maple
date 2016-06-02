@@ -6,14 +6,14 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 23:43:21 (CST)
-# Last Update:星期五 2016-5-27 19:6:31 (CST)
+# Last Update:星期四 2016-6-2 12:30:42 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask import Flask, render_template, request,abort
+from flask import Flask, render_template, request, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_maple import MapleCaptcha, MapleBootstrap
-from flask_maple import Auth,Error
+from flask_maple import Captcha, Bootstrap
+from flask_maple import Auth, Error
 from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_babel import lazy_gettext as _
@@ -39,8 +39,8 @@ class Config(object):
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-maplec = MapleCaptcha(app)
-mapleb = MapleBootstrap(app)
+maplec = Captcha(app)
+mapleb = Bootstrap(app, use_auth=True)
 mail = Mail(app)
 babel = Babel(app)
 
@@ -107,10 +107,10 @@ def user_loader(id):
 
 @app.route('/')
 def index():
-    abort(500)
-    return render_template('index.html')
+    data = 'hello world'
+    return render_template('index.html', data=data)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug = True)
     print(app.url_map)

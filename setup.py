@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 22:19:36 (CST)
-# Last Update:星期四 2016-5-19 15:49:52 (CST)
+# Last Update:星期四 2016-6-2 12:31:40 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -15,7 +15,7 @@ from setuptools import setup
 
 setup(
     name='Flask-Maple',
-    version='0.2.9',
+    version='0.3.3',
     url='https://github.com/honmaple/flask-maple',
     license='BSD',
     author='honmaple',
@@ -30,6 +30,7 @@ setup(
         'Flask',
         'Flask-Assets',
         'Flask-Login',
+        'Flask-Babel',
         'Pillow'
     ],
     classifiers=[

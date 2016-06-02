@@ -21,29 +21,19 @@ Or alternatively, you can download the repository and install manually by doing:
 1.2 Bootstrap
 ~~~~~~~~~~~~~
 
-You need register csrf before use boostrap
+It's very sample to use bootstrap
 
 .. code-block:: python
 
-    from flask import Flask
-    from flask_maple import MapleBootstrap
-    from flask_wtf.csrf import CsrfProtect
+    from flask_maple import Bootstrap
+    maple = Boostrap(app)
 
-     app = Flask(__name__)
-     app.config['SECRET_KEY'] = 'hard to guess'
-     csrf = CsrfProtect()
-     csrf.init_app(app)
-     maple = MapleBoostrap()
-     maple.init_app(app)
-     # or MapleBootstrap(app)
+or you can register it by
 
-     @app.route('/')
-     def index():
-         return render_template('index.html')
+.. code-block:: python
 
-     if __name__ == '__main__':
-         app.run()
-         print(app.url_map)
+    maple = Bootstrap()
+    maple.init_app(app)
 
 **Templates:**
 
@@ -51,7 +41,7 @@ You need register csrf before use boostrap
 
     {% extends 'maple/base.html' %}
     {% block main -%}
-    <button class="btn btn-primary">asd</button>
+    <button class="btn btn-primary">submit</button>
     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
     {% endblock -%}
 
@@ -64,7 +54,7 @@ You need register csrf before use boostrap
 1.3 Captcha
 ~~~~~~~~~~~
 
-Please install Pillow before use captcha
+Please install **Pillow** before use captcha
 
 .. code-block:: python
 
@@ -74,8 +64,8 @@ Please install Pillow before use captcha
 
 .. code-block:: python
 
-    from flask_maple import MapleCaptcha
-    captcha = MapleCaptcha(app)
+    from flask_maple import Captcha
+    captcha = Captcha(app)
 
 Then you can visit `http://127.0.0.1/captcha <http://127.0.0.1/captcha>`_
 
@@ -110,6 +100,26 @@ This extension provides some simple error view
 
 It's easy to use login
 
+.. code-block:: python
+
+    class User(db.Model, UserMixin):
+        id = db.Column(db.Integer, primary_key=True)
+        username = db.Column(db.String(80), unique=True)
+        email = db.Column(db.String(120), unique=True)
+        password = db.Column(db.String(120), unique=True)
+
+
+        def __repr__(self):
+            return '<User %r>' % self.username
+
+        @staticmethod
+        def set_password(password):
+            pw_hash = generate_password_hash(password)
+            return pw_hash
+
+        def check_password(self, password):
+            return check_password_hash(self.password, password)
+
 **Usage**:
 
 .. code-block:: python
@@ -117,4 +127,11 @@ It's easy to use login
     from flask_maple import Auth
     auth = Auth(app, db=db, mail=mail, user_model=User)
 
-Then you can visit `http://127.0.0.1:5000/login <http://127.0.0.1:5000/login>`_
+If you use flask-principal,please set use_principal = True
+
+.. code-block:: python
+
+    from flask_maple import Auth
+    auth = Auth(app, db=db, mail=mail, user_model=User,use_principal = True)
+
+then you can visit `http://127.0.0.1:5000/login <http://127.0.0.1:5000/login>`_

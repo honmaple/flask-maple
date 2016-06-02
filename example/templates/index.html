@@ -1,36 +1,33 @@
 {% extends 'maple/base.html' %}
-
-{% block script %}
-{{super()}}
-<script src="{{ url_for('bootstrap.static',filename='ckeditor/ckeditor.js')}}"> </script>
-{%- endblock %}
 {% block main -%}
-<button class="btn btn-primary">asd</button>
-<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-<br/>
-<img alt="captcha" src="{{ url_for('captcha') }}"/>
-Please press f5 to refresh
+  <button class="btn btn-primary">asd</button>
+  <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+  <br/>
+  <img alt="captcha" src="{{ url_for('captcha') }}"/>
+  Please press f5 to refresh
+  <p>
+    <i class="icon-camera-retro"></i> icon-camera-retro
+    <i class="icon-camera-retro icon-large"></i> icon-camera-retro
+    <i class="icon-camera-retro icon-2x"></i> icon-camera-retro
+    <i class="icon-camera-retro icon-3x"></i> icon-camera-retro
+    <i class="icon-camera-retro icon-4x"></i> icon-camera-retro
+  </p>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<div class="alert alert-info" style="padding:8px">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-    <ul>
-        {% for message in messages %}
-        <li>{{ message }} </li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
-{% endwith %}
-<form>
-    <textarea name="editor1" id="editor1" rows="10" cols="80">
-                This is my textarea to be replaced with CKEditor.
-    </textarea>
-    <script>
-     CKEDITOR.replace('editor1');
-    </script>
-</form>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="alert alert-info" style="padding:8px">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }} </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %}
+  <br/>
+  <br/>
+  {{ data }}
 {% endblock -%}

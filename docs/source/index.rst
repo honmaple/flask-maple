@@ -12,7 +12,9 @@ It's easy to use bootstrap,captcha,login and some error
    :maxdepth: 2
 
    introduction
-   advanced
+   bootstrap
+   error
+   auth
 
 
 

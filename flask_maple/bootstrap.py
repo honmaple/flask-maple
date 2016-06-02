@@ -6,18 +6,25 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期三 2016-5-18 20:48:6 (CST)
+# Last Update:星期四 2016-6-2 12:21:21 (CST)
 #          By: jianglin
-# Description:
+# Description: a sample way to use bootstrap
 # **************************************************************************
 from flask import Blueprint
 from flask_assets import Environment, Bundle
 
 
-class MapleBootstrap(object):
-    def __init__(self, app=None, js=None, css=None):
+class Bootstrap(object):
+    def __init__(self,
+                 app=None,
+                 js=None,
+                 css=None,
+                 use_auth=False,
+                 use_awesome=True):
         self.js = js
         self.css = css
+        self.use_auth = use_auth
+        self.use_awesome = use_awesome
         if app is not None:
             self.app = app
             self.init_app(self.app)
@@ -44,8 +51,6 @@ class MapleBootstrap(object):
         bundles = {
             'home_js': Bundle('bootstrap/js/jquery.min.js',
                               'bootstrap/js/bootstrap.min.js',
-                              'bootstrap/js/honmaple.js',
-                              'bootstrap/js/login.js',
                               output='assets/home.js',
                               filters='jsmin'),
             'home_css': Bundle('bootstrap/css/bootstrap.min.css',
@@ -53,6 +58,13 @@ class MapleBootstrap(object):
                                output='assets/home.css',
                                filters='cssmin')
         }
+        if self.use_auth:
+            auth_js = ('bootstrap/js/honmaple.js', 'bootstrap/js/login.js')
+            bundles['home_js'].contents = bundles['home_js'].contents + auth_js
+        if self.use_awesome:
+            awesome_css = ('bootstrap/font-awesome/css/font-awesome.min.css', )
+            bundles['home_css'].contents = bundles[
+                'home_css'].contents + awesome_css
         if self.css:
             bundles['home_css'].contents = bundles[
                 'home_css'].contents + self.css
@@ -68,3 +80,4 @@ class MapleBootstrap(object):
             return author
 
         app.jinja_env.globals['show_footer'] = show_footer
+        app.jinja_env.globals['use_auth'] = self.use_auth

@@ -4,11 +4,20 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> {% block title %}{%- endblock -%}</title>
+        {%- if use_auth %}
         <script type="text/javascript" charset="utf-8">
          var g = {
              csrftoken: "{{ csrf_token() }}"
          };
+         var url = {
+             index: "{{ request.args.get('next') or '/' }}",
+             login: "{{ url_for('auth.login') }}",
+             forget: "{{ url_for('auth.forget')}}",
+             register: "{{ url_for('auth.register') }}",
+             captcha: "{{ url_for('captcha')}}"
+         };
         </script>
+        {% endif %}
         {%- block script %}
         {%- assets "home_js" -%}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
@@ -28,6 +37,13 @@
              url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.ttf')}}') format('truetype'),
              url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular')}}') format('svg');
          }
+          @font-face{
+          font-family:'FontAwesome';
+          src:url('/static/bootstrap/font-awesome/font/fontawesome-webfont.eot?v=3.2.1');
+          src:url('/static/bootstrap/font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1') format('embedded-opentype'),
+          url('/static/bootstrap/font-awesome/font/fontawesome-webfont.woff?v=3.2.1') format('woff'),
+          url('/static/bootstrap/font-awesome/font/fontawesome-webfont.ttf?v=3.2.1') format('truetype'),
+          url('/static/bootstrap/font-awesome/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1') format('svg');
         </style>
         {%- endblock %}
     </head>
@@ -37,9 +53,7 @@
                 {% block main -%}{%- endblock -%}
             </div>
         </div>
-        <div class="footer text-center">
-            {{ show_footer() }}
-        </div>
+        {% include 'maple/footer.html' %}
     </body>
 </html>
 
