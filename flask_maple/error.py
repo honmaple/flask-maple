@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-05-18 16:34:19 (CST)
-# Last Update:星期二 2016-5-31 0:21:30 (CST)
+# Last Update:星期四 2016-6-2 22:5:47 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -23,10 +23,15 @@ class Error(object):
             self.app = None
 
     def init_app(self, app):
+        # try:
+        #     app.error_handler_spec[None][403] = self.forbidden
+        #     app.error_handler_spec[None][404] = self.not_found
+        #     app.error_handler_spec[None][500] = self.error
+        # except AttributeError:
+        app.register_error_handler(403, self.forbidden)
+        app.register_error_handler(404, self.not_found)
+        app.register_error_handler(500, self.error)
         self.app = app
-        app.error_handler_spec[None][403] = self.forbidden
-        app.error_handler_spec[None][404] = self.not_found
-        app.error_handler_spec[None][500] = self.error
 
     def forbidden(self, error):
         return render_template('templet/error_403.html'), 403
