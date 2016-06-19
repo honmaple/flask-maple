@@ -6,18 +6,18 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期四 2016-6-2 12:5:29 (CST)
+# Last Update:星期日 2016-6-19 23:44:34 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
 from .forms import LoginForm, RegisterForm, ForgetPasswordForm, return_errors
 from .mail import MapleMail
 from flask import (request, session, jsonify, flash, render_template, url_for,
-                   redirect, current_app, abort)
+                   redirect, current_app)
 from werkzeug.security import generate_password_hash
 from flask_babel import gettext as _
 from flask_login import login_user, logout_user, current_user, login_required
-from datetime import datetime, timedelta
+from datetime import datetime
 from random import sample
 from string import ascii_letters, digits
 from functools import wraps
@@ -35,22 +35,6 @@ def guest_permission(func):
         if current_user.is_authenticated:
             flash(_("You have logined in ,needn't login again"))
             return redirect('/')
-        return func(*args, **kwargs)
-
-    return decorator
-
-
-def check_time(func):
-    @wraps(func)
-    def decorator(*args, **kwargs):
-        if current_user.send_email_time is None:
-            pass
-        else:
-            if datetime.now() < current_user.send_email_time + timedelta(
-                    seconds=360):
-                return jsonify(judge=False,
-                               error="Your confirm link have not out of time,"
-                               + "Please confirm your email in time")
         return func(*args, **kwargs)
 
     return decorator
@@ -125,6 +109,7 @@ class Auth(object):
                 pass
             return render_template('auth/login.html', form=form, error=error)
 
+    @login_required
     def logout(self):
         logout_user()
         if self.use_principal:
@@ -164,6 +149,7 @@ class Auth(object):
                 pass
             return render_template('auth/register.html', form=form)
 
+    @guest_permission
     def forget(self):
         error = None
         form = self.forget_form()
@@ -203,7 +189,6 @@ class Auth(object):
         return redirect('/')
 
     @login_required
-    @check_time
     def confirm_email(self):
         if current_user.is_confirmed:
             return jsonify(
@@ -251,5 +236,3 @@ class Auth(object):
             from flask_principal import Identity, identity_changed
             identity_changed.send(current_app._get_current_object(),
                                   identity=Identity(user.id))
-        else:
-            pass

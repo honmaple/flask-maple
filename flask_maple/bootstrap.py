@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期四 2016-6-2 12:21:21 (CST)
+# Last Update:星期日 2016-6-19 23:45:41 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************
@@ -81,3 +81,4 @@ class Bootstrap(object):
 
         app.jinja_env.globals['show_footer'] = show_footer
         app.jinja_env.globals['use_auth'] = self.use_auth
+        app.jinja_env.globals['use_awesome'] = self.use_awesome
