@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期日 2016-6-19 23:45:41 (CST)
+# Last Update:星期六 2016-6-25 11:11:5 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************
@@ -69,7 +69,7 @@ class Bootstrap(object):
             bundles['home_css'].contents = bundles[
                 'home_css'].contents + self.css
         if self.js:
-            bundles['home_css'].contents = bundles[
+            bundles['home_js'].contents = bundles[
                 'home_js'].contents + self.js
 
         assets = Environment(app)
