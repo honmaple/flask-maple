@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 23:43:21 (CST)
-# Last Update:星期日 2016-6-19 23:50:12 (CST)
+# Last Update:星期五 2016-7-8 23:13:42 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -15,8 +15,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_maple import Captcha, Bootstrap
 from flask_maple import Auth, Error
 from flask_sqlalchemy import SQLAlchemy
-from flask_babel import Babel
-from flask_babel import lazy_gettext as _
+from flask_babelex import Babel
+from flask_babelex import lazy_gettext as _
 from flask_login import UserMixin, LoginManager, current_user
 from flask_mail import Mail
 

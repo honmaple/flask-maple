@@ -1,0 +1,122 @@
+# Chinese translations for PROJECT.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: flask-maple\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-07-07 21:16+0800\n"
+"PO-Revision-Date: 2016-07-07 21:16+0800\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh\n"
+"Language-Team: zh <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: ../flask_maple/auth.py:36
+msgid "You have logined in ,needn't login again"
+msgstr "你已经登陆，不能重复登陆"
+
+#: ../flask_maple/auth.py:100
+msgid "You have logined in"
+msgstr "登陆成功!"
+
+#: ../flask_maple/auth.py:103
+msgid "Name or Password is error"
+msgstr "昵称或密码错误"
+
+#: ../flask_maple/auth.py:133
+msgid "The name has been registered"
+msgstr "昵称已被注册"
+
+#: ../flask_maple/auth.py:136
+msgid "The email has been registered"
+msgstr "邮箱已被注册"
+
+#: ../flask_maple/auth.py:143 ../flask_maple/auth.py:202
+msgid "An email has been sent to your.Please receive"
+msgstr "一封邮件已发送到你的邮箱，请查收"
+
+#: ../flask_maple/auth.py:163
+msgid ""
+"An email has been sent to you.Please receive and update your password in "
+"time"
+msgstr "一封邮件已发送到你的邮箱，请查收并及时修改你的密码"
+
+#: ../flask_maple/auth.py:167
+msgid "The email is error"
+msgstr "邮箱未注册"
+
+#: ../flask_maple/auth.py:179
+msgid "The confirm link has been out of time.Please confirm your email again"
+msgstr "验证链接已过期,请重新验证你的帐号"
+
+#: ../flask_maple/auth.py:184
+msgid "The email has been confirmed. Please login."
+msgstr "邮箱已验证成功，请登陆"
+
+#: ../flask_maple/auth.py:196
+msgid "Your account has been confirmed,don't need again"
+msgstr "你的账户已经验证，不能重复验证"
+
+#: ../flask_maple/auth.py:226
+msgid "Please confirm  your email"
+msgstr "请验证你的邮箱"
+
+#: ../flask_maple/forms.py:32
+msgid "Username:"
+msgstr "昵称:"
+
+#: ../flask_maple/forms.py:34
+msgid "Password:"
+msgstr "密码:"
+
+#: ../flask_maple/forms.py:36 ../flask_maple/forms.py:65
+msgid "Captcha:"
+msgstr "验证码"
+
+#: ../flask_maple/forms.py:46 ../flask_maple/forms.py:75
+msgid "The captcha is error"
+msgstr "验证码错误"
+
+#: ../flask_maple/forms.py:53
+msgid "Email:"
+msgstr "邮箱:"
+
+#: ../flask_maple/forms.py:57
+msgid "Remember me"
+msgstr "记住我"
+
+#: ../flask_maple/forms.py:62
+msgid "Register Email:"
+msgstr "注册邮箱"
+
+#: ../flask_maple/templates/maple/auth.html:49
+msgid "confirm"
+msgstr "确认"
+
+#: ../flask_maple/templates/maple/auth.html:79
+msgid "login"
+msgstr "登陆"
+
+#: ../flask_maple/templates/maple/auth.html:80
+msgid "forget password?"
+msgstr "忘记密码?"
+
+#: ../flask_maple/templates/maple/auth.html:89
+msgid "not register"
+msgstr "还未注册"
+
+#: ../flask_maple/templates/maple/auth.html:122
+msgid "register"
+msgstr "注册"
+
+#: ../flask_maple/templates/maple/captcha.html:2
+msgid "Captcha"
+msgstr "验证码"
+

@@ -2,7 +2,7 @@
 
   [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/pypi-v0.3.5-brightgreen.svg]]
   [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/python-3.4-brightgreen.svg]]
-  [[license][https://img.shields.io/badge/license-BSD-blue.svg]]
+  [[LICENSE][https://img.shields.io/badge/license-BSD-blue.svg]]
 
   You can find all of the documentation at [[http://docs.honmaple.org/flask-maple/index.html][http://docs.honmaple.org]]
 

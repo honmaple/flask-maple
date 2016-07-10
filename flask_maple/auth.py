@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期日 2016-6-19 23:44:34 (CST)
+# Last Update:星期五 2016-7-8 23:13:42 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -15,7 +15,7 @@ from .mail import MapleMail
 from flask import (request, session, jsonify, flash, render_template, url_for,
                    redirect, current_app)
 from werkzeug.security import generate_password_hash
-from flask_babel import gettext as _
+from flask_babelex import gettext as _
 from flask_login import login_user, logout_user, current_user, login_required
 from datetime import datetime
 from random import sample

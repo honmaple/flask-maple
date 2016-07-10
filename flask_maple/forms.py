@@ -11,7 +11,7 @@ from flask import jsonify, flash, session
 from flask_wtf import Form
 from wtforms import (StringField, PasswordField, BooleanField)
 from wtforms.validators import Length, DataRequired, Email
-from flask_babel import lazy_gettext as _
+from flask_babelex import lazy_gettext as _
 
 
 def flash_errors(form):
