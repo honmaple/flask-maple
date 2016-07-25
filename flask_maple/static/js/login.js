@@ -9,11 +9,12 @@ $(document).ready(function(){
       data:JSON.stringify({
         username: $('#username').val(),
         password: $('#password').val(),
-        captcha:  $("#captcha").val()
+        captcha:  $("#captcha").val(),
+        remember:  $("#remember").is(':checked')
       }),
       contentType: 'application/json;charset=UTF-8',
       success: function(result) {
-        if (result.judge == true)
+        if (result.judge === true)
         {
           window.location = url.index;
         }
@@ -38,7 +39,7 @@ $(document).ready(function(){
       }),
       contentType: 'application/json;charset=UTF-8',
       success: function(result) {
-        if (result.judge == true)
+        if (result.judge === true)
         {
           window.location = url.index;
         }
@@ -62,7 +63,7 @@ $(document).ready(function(){
       }),
       contentType: 'application/json;charset=UTF-8',
       success: function(result) {
-        if (result.judge == true)
+        if (result.judge === true)
         {
           window.location = url.index;
         }

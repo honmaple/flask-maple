@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期五 2016-7-8 23:13:42 (CST)
+# Last Update:星期一 2016-7-25 14:46:55 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -90,12 +90,16 @@ class Auth(object):
         if form.validate_on_submit() and request.method == "POST":
             username = form.username.data
             password = form.password.data
-            remember = form.remember.data
+            remember = request.get_json()['remember']
+            # use form.remember.data can't get really value
+            # remember = form.remember.data
             user = self.User.query.filter_by(username=username).first()
             if user is not None and user.check_password(password):
                 if remember:
-                    session.permanent = True
-                login_user(user, remember=remember)
+                    # session.permanent = True
+                    login_user(user, remember=True)
+                else:
+                    login_user(user)
                 self.principals(user)
                 flash(_('You have logined in'))
                 return jsonify(judge=True, error=error)
