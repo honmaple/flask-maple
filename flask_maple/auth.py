@@ -6,11 +6,11 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期一 2016-7-25 14:46:55 (CST)
+# Last Update:星期二 2016-11-1 20:40:1 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
-from .forms import LoginForm, RegisterForm, ForgetPasswordForm, return_errors
+from .forms import LoginForm, RegisterForm, ForgetForm, return_errors
 from .mail import MapleMail
 from flask import (request, session, jsonify, flash, render_template, url_for,
                    redirect, current_app)
@@ -21,6 +21,7 @@ from datetime import datetime
 from random import sample
 from string import ascii_letters, digits
 from functools import wraps
+from .response import HTTPResponse
 
 
 def set_password():
@@ -49,7 +50,7 @@ class Auth(object):
                  use_principal=False,
                  login_form=LoginForm,
                  register_form=RegisterForm,
-                 forget_form=ForgetPasswordForm):
+                 forget_form=ForgetForm):
         self.db = db
         self.mail = MapleMail(app=app, mail=mail)
         self.use_principal = use_principal
@@ -64,54 +65,45 @@ class Auth(object):
             self.app = None
 
     def init_app(self, app):
-        app.add_url_rule('/register',
-                         'auth.register',
-                         self.register,
-                         methods=['GET', 'POST'])
-        app.add_url_rule('/login',
-                         'auth.login',
-                         self.login,
-                         methods=['GET', 'POST'])
-        app.add_url_rule('/forget',
-                         'auth.forget',
-                         self.forget,
-                         methods=['GET', 'POST'])
-        app.add_url_rule('/confirm-email',
-                         'auth.confirm_email',
-                         self.confirm_email,
-                         methods=['POST'])
+        app.add_url_rule(
+            '/register',
+            'auth.register',
+            self.register,
+            methods=['GET', 'POST'])
+        app.add_url_rule(
+            '/login', 'auth.login', self.login, methods=['GET', 'POST'])
+        app.add_url_rule(
+            '/forget', 'auth.forget', self.forget, methods=['GET', 'POST'])
+        app.add_url_rule(
+            '/confirm-email',
+            'auth.confirm_email',
+            self.confirm_email,
+            methods=['POST'])
         app.add_url_rule('/logout', 'auth.logout', self.logout)
         app.add_url_rule('/confirm/<token>', 'auth.confirm', self.confirm)
 
     @guest_permission
     def login(self):
-        error = None
         form = self.login_form()
         if form.validate_on_submit() and request.method == "POST":
             username = form.username.data
             password = form.password.data
-            remember = request.get_json()['remember']
-            # use form.remember.data can't get really value
-            # remember = form.remember.data
+            remember = form.remember.data
             user = self.User.query.filter_by(username=username).first()
             if user is not None and user.check_password(password):
                 if remember:
-                    # session.permanent = True
-                    login_user(user, remember=True)
-                else:
-                    login_user(user)
+                    session.permanent = True
+                login_user(user, remember=remember)
                 self.principals(user)
                 flash(_('You have logined in'))
-                return jsonify(judge=True, error=error)
+                return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
             else:
-                error = _('Name or Password is error')
-                return jsonify(judge=False, error=error)
+                return HTTPResponse(
+                    HTTPResponse.LOGIN_USER_OR_PASSWORD_ERROR).to_response()
         else:
             if form.errors:
                 return return_errors(form)
-            else:
-                pass
-            return render_template('auth/login.html', form=form, error=error)
+            return render_template('auth/login.html', form=form)
 
     @login_required
     def logout(self):
@@ -120,13 +112,13 @@ class Auth(object):
             from flask_principal import (AnonymousIdentity, identity_changed)
             for key in ('identity.id', 'identity.auth_type'):
                 session.pop(key, None)
-            identity_changed.send(current_app._get_current_object(),
-                                  identity=AnonymousIdentity())
+            identity_changed.send(
+                current_app._get_current_object(),
+                identity=AnonymousIdentity())
         return redirect(request.args.get('next') or '/')
 
     @guest_permission
     def register(self):
-        error = None
         form = self.register_form()
         if form.validate_on_submit() and request.method == "POST":
             useremail = self.User.query.filter_by(
@@ -134,28 +126,25 @@ class Auth(object):
             username = self.User.query.filter_by(
                 username=form.username.data).first()
             if username is not None:
-                error = _('The name has been registered')
-                return jsonify(judge=False, error=error)
+                return HTTPResponse(
+                    HTTPResponse.LOGIN_USERNAME_UNIQUE).to_response()
             elif useremail is not None:
-                error = _('The email has been registered')
-                return jsonify(judge=False, error=error)
+                return HTTPResponse(
+                    HTTPResponse.LOGIN_EMAIL_UNIQUE).to_response()
             else:
                 user = self.register_models(form)
                 login_user(user)
                 self.principals(user)
                 self.register_email(user.email)
                 flash(_('An email has been sent to your.Please receive'))
-                return jsonify(judge=True, error=error)
+                return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
         else:
             if form.errors:
                 return return_errors(form)
-            else:
-                pass
             return render_template('auth/register.html', form=form)
 
     @guest_permission
     def forget(self):
-        error = None
         form = self.forget_form()
         if form.validate_on_submit() and request.method == "POST":
             user = self.User.query.filter_by(
@@ -164,24 +153,24 @@ class Auth(object):
                 password, user.password = set_password()
                 self.db.session.commit()
                 self.forget_email(user.email, password)
-                flash(_(
-                    'An email has been sent to you.Please receive and update your password in time'))
-                return jsonify(judge=True, error=error)
+                flash(
+                    _('An email has been sent to you.Please receive and update your password in time'
+                      ))
+                return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
             else:
-                error = _('The email is error')
-                return jsonify(judge=False, error=error)
+                return HTTPResponse(
+                    HTTPResponse.FORGET_EMAIL_NOT_REGISTER).to_response()
         else:
             if form.errors:
                 return return_errors(form)
-            else:
-                pass
             return render_template('auth/forget.html', form=form)
 
     def confirm(self, token):
         email = self.mail.confirm_token(token)
         if not email:
-            flash(_(
-                'The confirm link has been out of time.Please confirm your email again'))
+            flash(
+                _('The confirm link has been out of time.Please confirm your email again'
+                  ))
             return redirect('/')
         user = self.User.query.filter_by(email=email).first()
         if user.is_confirmed:
@@ -201,9 +190,9 @@ class Auth(object):
         else:
             self.register_email(current_user.email)
             self.email_models()
-            return jsonify(
-                judge=True,
-                error=_('An email has been sent to your.Please receive'))
+            msg = _('An email has been sent to your.Please receive')
+            return HTTPResponse(
+                HTTPResponse.NORMAL_STATUS, description=msg).to_response()
 
     def confirm_models(self, user):
         user.is_confirmed = True
@@ -238,5 +227,5 @@ class Auth(object):
     def principals(self, user):
         if self.use_principal:
             from flask_principal import Identity, identity_changed
-            identity_changed.send(current_app._get_current_object(),
-                                  identity=Identity(user.id))
+            identity_changed.send(
+                current_app._get_current_object(), identity=Identity(user.id))

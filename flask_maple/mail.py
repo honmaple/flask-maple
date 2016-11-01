@@ -37,9 +37,10 @@ class MapleMail(object):
         config = current_app.config
         serializer = URLSafeTimedSerializer(config['SECRET_KEY'])
         try:
-            email = serializer.loads(token,
-                                     salt=config['SECURITY_PASSWORD_SALT'],
-                                     max_age=expiration)
+            email = serializer.loads(
+                token,
+                salt=config['SECURITY_PASSWORD_SALT'],
+                max_age=expiration)
         except:
             return False
         return email

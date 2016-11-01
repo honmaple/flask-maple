@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 22:17:32 (CST)
-# Last Update:星期二 2016-5-31 0:5:5 (CST)
+# Last Update:星期五 2016-10-28 20:9:44 (CST)
 #          By: jianglin
 # Description: use pillow generate captcha
 # **************************************************************************
@@ -17,12 +17,13 @@ from io import BytesIO
 
 
 class Captcha(object):
-    def __init__(self, app=None):
+    def __init__(self, app=None, font=None):
         if app is not None:
             self.app = app
             self.init_app(self.app)
         else:
             self.app = None
+        self.font = font
 
     def init_app(self, app):
         self.captcha = app.config.get('CAPTCHA_URL', 'captcha')
@@ -30,7 +31,7 @@ class Captcha(object):
 
     def validate(self):
         t = GenCaptcha()
-        buf = t.start()
+        buf = t.start(font_type=self.font)
         buf_value = buf.getvalue()
         response = self.app.make_response(buf_value)
         response.headers['Content-Type'] = 'image/jpeg'
@@ -70,9 +71,8 @@ class GenCaptcha(object):
                                     width, height, fg_color)
 
         params = [1 - float(randint(1, 2)) / 100, 0, 0, 0,
-                  1 - float(randint(1, 10)) / 100,
-                  float(randint(1, 2)) / 500, 0.001,
-                  float(randint(1, 2)) / 500]
+                  1 - float(randint(1, 10)) / 100, float(randint(1, 2)) / 500,
+                  0.001, float(randint(1, 2)) / 500]
         img = img.transform(size, Image.PERSPECTIVE, params)
 
         img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)
@@ -115,8 +115,11 @@ class GenCaptcha(object):
 
         return ''.join(c_chars)
 
-    def start(self):
-        code_img = self.create_validate_code()
+    def start(self, font_type=None):
+        if font_type is not None:
+            code_img = self.create_validate_code(font_type=font_type)
+        else:
+            code_img = self.create_validate_code()
         buf = BytesIO()
         code_img[0].save(buf, 'JPEG', quality=70)
         session['captcha'] = code_img[1]
