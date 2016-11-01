@@ -2,6 +2,24 @@ $(document).ready(function(){
   $('a#clickCode').click(function() {
     $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
   });
+  function AuthCallBack(response) {
+    if (response.status === '200')
+    {
+      window.location = url.index;
+    }
+    else
+    {
+      $("#showerror").show();
+      $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
+      $("#captcha").val("");
+      if (response.description === ''){
+        $("#error").text(response.message);
+      }
+      else{
+        $("#error").text(response.description);
+      }
+    }
+  }
   $('button#login').click(function() {
     $.ajax ({
       type : "POST",
@@ -13,17 +31,8 @@ $(document).ready(function(){
         remember:  $("#remember").is(':checked')
       }),
       contentType: 'application/json;charset=UTF-8',
-      success: function(result) {
-        if (result.judge === true)
-        {
-          window.location = url.index;
-        }
-        else
-        {
-          $("#showerror").show();
-          $("#error").text(result.error);
-          $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
-        }
+      success: function(response) {
+        return AuthCallBack(response);
       }
     });
   });
@@ -38,18 +47,8 @@ $(document).ready(function(){
         captcha:$("#captcha").val()
       }),
       contentType: 'application/json;charset=UTF-8',
-      success: function(result) {
-        if (result.judge === true)
-        {
-          window.location = url.index;
-        }
-        else
-        {
-          $("#showerror").show();
-          $("#error").text(result.error);
-          $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
-
-        }
+      success: function(response) {
+        return AuthCallBack(response);
       }
     });
   });
@@ -62,17 +61,8 @@ $(document).ready(function(){
         captcha:$("#captcha").val()
       }),
       contentType: 'application/json;charset=UTF-8',
-      success: function(result) {
-        if (result.judge === true)
-        {
-          window.location = url.index;
-        }
-        else
-        {
-          $("#showerror").show();
-          $("#error").text(result.error);
-          $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
-        }
+      success: function(response) {
+        return AuthCallBack(response);
       }
     });
   });

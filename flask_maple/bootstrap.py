@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期六 2016-6-25 11:11:5 (CST)
+# Last Update:星期六 2016-10-29 23:30:18 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************
@@ -25,11 +25,9 @@ class Bootstrap(object):
         self.css = css
         self.use_auth = use_auth
         self.use_awesome = use_awesome
+        self.app = app
         if app is not None:
-            self.app = app
-            self.init_app(self.app)
-        else:
-            self.app = None
+            self.init_app(app)
 
     def init_app(self, app):
         self.author_name = app.config.get('AUTHOR_NAME', 'honmaple')
