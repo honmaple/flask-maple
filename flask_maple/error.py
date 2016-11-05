@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-05-18 16:34:19 (CST)
-# Last Update:星期二 2016-11-1 20:42:22 (CST)
+# Last Update:星期六 2016-11-5 12:44:59 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -31,11 +31,11 @@ class Error(object):
         app.register_error_handler(500, self.error)
 
     def forbidden(self, error):
-        current_app.logger.error(error)
+        current_app.logger.warning(error)
         return render_template('templet/error_403.html'), 403
 
     def not_found(self, error):
-        current_app.logger.error(error)
+        current_app.logger.warning(error)
         return render_template('templet/error_404.html'), 404
 
     def error(self, error):

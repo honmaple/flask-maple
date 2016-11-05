@@ -8,11 +8,15 @@
 #   Created Time: 2015-10-29 07:09:54
 # *************************************************************************
 from flask import flash, session
-from flask_wtf import Form
 from wtforms import (StringField, PasswordField, BooleanField)
 from wtforms.validators import Length, DataRequired, Email
 from flask_babelex import lazy_gettext as _
 from .response import HTTPResponse
+
+try:
+    from flask_wtf import FlaskForm as Form
+except ImportError:
+    from flask_wtf import Form
 
 
 def flash_errors(form):
@@ -63,8 +67,7 @@ class LoginForm(BaseForm):
 
 
 class ForgetForm(Form):
-    email = StringField(
-        _('Register Email:'), [DataRequired(), Email()])
+    email = StringField(_('Register Email:'), [DataRequired(), Email()])
 
     captcha = StringField(
         _('Captcha:'), [DataRequired(), Length(

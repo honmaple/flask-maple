@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期六 2016-10-29 22:48:7 (CST)
+# Last Update:星期六 2016-11-5 17:26:13 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -36,18 +36,25 @@ class HTTPResponse(object):
         FORM_VALIDATE_ERROR: _('Form validate error'),
     }
 
-    def __init__(self, status='200', message='', data=None, description=''):
+    def __init__(self,
+                 status='200',
+                 message='',
+                 data=None,
+                 description='',
+                 pageinfo=None):
         self.status = status
-        self.message = HTTPResponse.STATUS_DESCRIPTION.get(status)
+        self.message = self.STATUS_DESCRIPTION.get(status)
         self.data = data
         self.description = description
+        self.pageinfo = pageinfo
 
     def to_dict(self):
         response = {
             'status': self.status,
             'message': self.message,
             'data': self.data,
-            'description': self.description
+            'description': self.description,
+            'pageinfo': self.pageinfo
         }
         return response
 
