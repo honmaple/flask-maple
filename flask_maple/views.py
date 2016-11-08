@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:56:36 (CST)
-# Last Update:星期六 2016-11-5 19:7:7 (CST)
+# Last Update:星期二 2016-11-8 23:8:10 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -19,10 +19,8 @@ __all__ = ['ViewList', 'View']
 
 class BaseView(MethodView):
     model = None
-    form = None
     template = None
     serializer = None
-    cache = None
 
     def get_page_info(self):
         page = request.args.get('page', 1, type=int)
