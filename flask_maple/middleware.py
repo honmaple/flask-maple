@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-12 11:56:09 (CST)
-# Last Update:星期六 2016-11-12 14:51:52 (CST)
+# Last Update:星期六 2016-11-12 16:23:50 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -26,12 +26,15 @@ class Middleware(object):
         app.before_request(self.process_request)
 
     def process_request(self):
+        view_args = request.view_args
+        if not view_args:
+            view_args = {}
         for middleware_string in self.middleware:
             middleware = import_string(middleware_string)
             if isclass(middleware):
                 response = middleware()
-                response = response(**request.view_args)
+                response = response(**view_args)
             else:
-                response = middleware(**request.view_args)
+                response = middleware(**view_args)
             if response is not None:
                 return response
