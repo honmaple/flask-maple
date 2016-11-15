@@ -6,11 +6,12 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-12 15:09:30 (CST)
-# Last Update:星期六 2016-11-12 15:22:37 (CST)
+# Last Update:星期一 2016-11-14 13:39:31 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask import send_from_directory, request
+from werkzeug import import_string
 
 
 class App(object):
@@ -28,3 +29,13 @@ class App(object):
 
         if self.json is not None:
             app.json_encoder = self.json
+        self.install_app(app)
+
+    def install_app(self, app):
+        install_apps = app.config.setdefault('INSTALLED_APPS', [])
+        for blueprint in install_apps:
+            kwargs = {}
+            if isinstance(blueprint, dict):
+                kwargs = blueprint['kwargs']
+                blueprint = blueprint['blueprint']
+            app.register_blueprint(import_string(blueprint), **kwargs)
