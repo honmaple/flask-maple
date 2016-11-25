@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期二 2016-11-8 23:7:19 (CST)
+# Last Update:星期五 2016-11-25 17:38:54 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -24,6 +24,8 @@ class HTTPResponse(object):
     USER_IS_CONFIRMED = '305',
     FORM_VALIDATE_ERROR = '305'
 
+    FORBIDDEN = '403'
+
     STATUS_DESCRIPTION = {
         NORMAL_STATUS: 'normal',
         LOGIN_USER_OR_PASSWORD_ERROR: _('Username or Password Error'),
@@ -34,6 +36,7 @@ class HTTPResponse(object):
         USER_IS_CONFIRMED:
         _('Your account has been confirmed,don\'t need again'),
         FORM_VALIDATE_ERROR: _('Form validate error'),
+        FORBIDDEN: _('You have no permission!')
     }
 
     def __init__(self,
