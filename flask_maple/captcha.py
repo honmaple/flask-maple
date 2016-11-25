@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 22:17:32 (CST)
-# Last Update:星期五 2016-10-28 20:9:44 (CST)
+# Last Update:星期六 2016-11-5 12:44:17 (CST)
 #          By: jianglin
 # Description: use pillow generate captcha
 # **************************************************************************
@@ -18,16 +18,15 @@ from io import BytesIO
 
 class Captcha(object):
     def __init__(self, app=None, font=None):
-        if app is not None:
-            self.app = app
-            self.init_app(self.app)
-        else:
-            self.app = None
+        self.app = app
         self.font = font
+        if app is not None:
+            self.init_app(app)
 
     def init_app(self, app):
-        self.captcha = app.config.get('CAPTCHA_URL', 'captcha')
-        app.add_url_rule('/' + self.captcha, 'captcha', self.validate)
+        self.app = app
+        captcha = app.config.get('CAPTCHA_URL', 'captcha')
+        app.add_url_rule('/' + captcha, 'captcha', self.validate)
 
     def validate(self):
         t = GenCaptcha()

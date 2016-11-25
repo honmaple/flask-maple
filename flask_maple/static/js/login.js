@@ -12,11 +12,11 @@ $(document).ready(function(){
       $("#showerror").show();
       $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
       $("#captcha").val("");
-      if (response.description === ''){
-        $("#error").text(response.message);
+      if (response.description !==""){
+        $("#error").text(response.description);
       }
       else{
-        $("#error").text(response.description);
+        $("#error").text(response.message);
       }
     }
   }

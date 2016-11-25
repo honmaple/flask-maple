@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期二 2016-11-1 20:35:13 (CST)
+# Last Update:星期二 2016-11-8 23:3:41 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -48,6 +48,8 @@ class Serializer(object):
     @property
     def data(self):
         if self.many:
+            self.paginate = self.instance
+            self.instance = self.instance.items
             return self._serializerlist()
         return self._serializer()
 
@@ -74,7 +76,18 @@ class Serializer(object):
                         field))
                 data[field] = self._has_child(self, instance, field)
             datalist.append(data)
-        return datalist
+        pageinfo = {
+            'items': True if datalist else False,
+            'pages': self.paginate.pages,
+            'has_prev': self.paginate.has_prev,
+            'page': self.paginate.page,
+            'has_next': self.paginate.has_next,
+            'iter_pages': list(self.paginate.iter_pages(left_edge=1,
+                                                        left_current=2,
+                                                        right_current=3,
+                                                        right_edge=1))
+        }
+        return datalist, SerializerData(pageinfo)
 
     def child_init(self, serializer, instance, field):
         # 子序列
