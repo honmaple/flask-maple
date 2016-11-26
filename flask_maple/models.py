@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期六 2016-11-19 22:13:46 (CST)
+# Last Update:星期六 2016-11-26 13:41:27 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -129,6 +129,17 @@ class ModelMixin(Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    def get_choice_display(self, column, choice):
+        if not hasattr(self, column):
+            raise ValueError("%s object have no column %s" %
+                             (self.__class__.__name__, column))
+        if not hasattr(self, choice):
+            raise ValueError("%s object have no choice %s" %
+                             (self.__class__.__name__, choice))
+        choice = dict(getattr(self, choice))
+        value = getattr(self, column)
+        return choice.get(value, value)
 
     @classmethod
     def get(cls, pk):

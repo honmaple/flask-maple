@@ -1,4 +1,5 @@
 include LICENSE
+recursive-include flask_maple/permission *
 recursive-include flask_maple/static *
 recursive-include flask_maple/translations *
 recursive-include flask_maple/templates *.html
