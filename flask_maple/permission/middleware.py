@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-25 17:34:29 (CST)
-# Last Update:星期六 2016-11-26 16:48:53 (CST)
+# Last Update:星期六 2016-11-26 18:52:6 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -75,14 +75,13 @@ class PermissionMiddleware(object):
         if user.is_active and user.is_superuser:
             return True
         if user.is_authenticated:
-            groups = Group.query.filter(
-                or_(Group.name == 'authenticated', Group.users.contains(
-                    user))).all()
-            if not groups:
+            groups = Group.query.filter_by(users__id=user.id).all()
+            group = Group.query.filter(Group.name == 'authenticated').first()
+            if not group:
                 group = Group()
                 group.name = 'authenticated'
                 group.save()
-                groups = [group]
+            groups.append(group)
         else:
             groups = Group.query.filter_by(name='anonymous').all()
             if not groups:
@@ -91,10 +90,9 @@ class PermissionMiddleware(object):
                 group.save()
                 groups = [group]
         group_perm_list = self._get_permissions(groups)
-        current_app.logger.debug(
-            'current groups are: %s' % groups)
-        current_app.logger.debug(
-            'current groups permissions are: %s' % group_perm_list)
+        current_app.logger.debug('current groups are: %s' % groups)
+        current_app.logger.debug('current groups permissions are: %s' %
+                                 group_perm_list)
         if self._has_deny_perm(group_perm_list):
             return False
         router = self._get_router()
