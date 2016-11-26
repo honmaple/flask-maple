@@ -6,11 +6,13 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-25 16:44:19 (CST)
-# Last Update:星期五 2016-11-25 17:34:4 (CST)
+# Last Update:星期六 2016-11-26 16:36:9 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask_maple.models import db
+from flask_maple.models import db, ModelMixin
+from sqlalchemy import event
+from sqlalchemy.orm import object_session
 
 group_permission = db.Table(
     'group_permission',
@@ -23,7 +25,7 @@ router_permission = db.Table(
     db.Column('permission_id', db.Integer, db.ForeignKey('permissions.id')))
 
 
-class Permission(db.Model):
+class Permission(db.Model, ModelMixin):
     __tablename__ = 'permissions'
 
     METHOD_GET = '0'
@@ -42,9 +44,12 @@ class Permission(db.Model):
     PERMISSION = (('0', '禁止'), ('1', '允许'))
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), nullable=False)
-    allow = db.Column(db.String(10), default=PERMISSION_ALLOW)
-    method = db.Column(db.String(16), default=METHOD_GET)
+    name = db.Column(db.String(512), nullable=False, unique=True)
+    allow = db.Column(db.String(10), nullable=False, default=PERMISSION_ALLOW)
+    method = db.Column(db.String(16), nullable=False, default=METHOD_GET)
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return "<Permission %r>" % self.name
@@ -60,12 +65,41 @@ class Permission(db.Model):
         return False
 
 
-class Group(db.Model):
+# class Callback(db.Model, ModelMixin):
+#     __tablename__ = 'callbacks'
+
+#     CALLBACK_TYPE_HTTP = '0'
+#     CALLBACK_TYPE_JSON = '1'
+#     CALLBACK_TYPE_REDIRECT = '2'
+
+#     CALLBACK_TYPE = (('0', '403 Forbidden'), ('1', 'Json'), ('2', 'Redirect'))
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     callback = db.Column(db.String(512), nullable=False, unique=True)
+#     callback_type = db.Column(
+#         db.String(10), nullable=False, default=CALLBACK_TYPE_HTTP)
+#     description = db.Column(db.String(128), nullable=True)
+
+#     def __str__(self):
+#         return self.callback
+
+#     def __repr__(self):
+#         return "<Callback %r>" % self.callback
+
+
+class Group(db.Model, ModelMixin):
     __tablename__ = 'groups'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(512), nullable=False)
+    name = db.Column(db.String(512), nullable=False, unique=True)
     permissions = db.relationship(
-        Permission, secondary=group_permission, backref=db.backref('groups'))
+        Permission,
+        secondary=group_permission,
+        backref=db.backref(
+            'groups', lazy='dynamic'),
+        lazy='dynamic')
+
+    def __str__(self):
+        return self.name
 
     def __repr__(self):
         return "<Group %r>" % self.name
@@ -87,20 +121,28 @@ class Group(db.Model):
         return True
 
 
-class Router(db.Model):
+class Router(db.Model, ModelMixin):
     __tablename__ = 'routers'
 
     URL_TYPE_HTTP = '0'
-    URL_TYPE_FUNC = '1'
-    URL_TYPE = (('0', 'http形式'), ('1', '函数形式'))
+    URL_TYPE_ENDPOINT = '1'
+    URL_TYPE = (('0', 'HTTP'), ('1', 'Endpoint'))
 
     id = db.Column(db.Integer, primary_key=True)
-    url = db.Column(db.String(512), nullable=False)
-    url_type = db.Column(db.String(10), default=URL_TYPE_HTTP)
-    description = db.Column(db.String(128), nullable=False)
-    rule = db.Column(db.String(512), nullable=False)
+    url = db.Column(db.String(512), nullable=False, unique=True)
+    url_type = db.Column(db.String(10), nullable=False, default=URL_TYPE_HTTP)
+    description = db.Column(db.String(128), nullable=True)
+    # callback_id = db.Column(db.Integer, db.ForeignKey('callbacks.id'))
+    # callback = db.relationship(
+    #     Callback, backref=db.backref(
+    #         'routers', lazy='dynamic'),
+    #     lazy='joined')
     permissions = db.relationship(
-        Permission, secondary=router_permission, backref=db.backref('routers'))
+        Permission,
+        secondary=router_permission,
+        backref=db.backref(
+            'routers', lazy='dynamic'),
+        lazy='dynamic')
 
     def __repr__(self):
         return "<Router %r>" % self.url
@@ -110,29 +152,73 @@ class Router(db.Model):
         if method == "HEAD":
             method = "GET"
         if hasattr(Permission, 'METHOD_' + method):
-            filter_dict.update(method=getattr(Permission,
-                                              'METHOD_' + method))
+            filter_dict.update(method=getattr(Permission, 'METHOD_' + method))
         return filter_dict
 
     def get_permissions(self):
         return self.permissions.all()
 
     def get_allow_permissions(self):
-        return self.permissions.filter(allow=Permission.PERMISSION_ALLOW)
+        return self.permissions.filter_by(allow=Permission.PERMISSION_ALLOW).all()
 
     def get_deny_permissions(self):
-        return self.permissions.filter(allow=Permission.PERMISSION_DENY)
+        return self.permissions.filter_by(allow=Permission.PERMISSION_DENY)
 
     def get_method_permissions(self, method):
         filter_dict = self._get_filter_dict(method)
-        return self.permissions.filter(**filter_dict)
+        return self.permissions.filter_by(**filter_dict).all()
 
     def get_allow_method_permissions(self, method):
         filter_dict = self._get_filter_dict(method)
         filter_dict.update(allow=Permission.PERMISSION_ALLOW)
-        return self.permissions.filter(**filter_dict)
+        return self.permissions.filter_by(**filter_dict).all()
 
     def get_deny_method_permissions(self, method):
         filter_dict = self._get_filter_dict(method)
         filter_dict.update(allow=Permission.PERMISSION_DENY)
-        return self.permissions.filter(**filter_dict)
+        return self.permissions.filter_by(**filter_dict).all()
+
+
+@event.listens_for(Group, 'after_insert')
+def add_group_permission(mapper, connection, target):
+    method_list = ['GET', 'POST', 'PUT', 'DELETE']
+    perm_list = []
+    for method in method_list:
+        name = target.name + '组' + '允许' + method + '请求'
+        perm = Permission.query.filter_by(name=name).first()
+        if perm is None:
+            perm = Permission()
+            perm.name = name
+            perm.allow = Permission.PERMISSION_ALLOW
+            perm.method = getattr(Permission, 'METHOD_' + method)
+            object_session(target).add(perm)
+        perm_list.append(perm)
+
+        name = target.name + '组' + '禁止' + method + '请求'
+        perm = Permission.query.filter_by(name=name).first()
+        if perm is None:
+            perm = Permission()
+            perm.name = name
+            perm.allow = Permission.PERMISSION_DENY
+            perm.method = getattr(Permission, 'METHOD_' + method)
+            object_session(target).add(perm)
+        perm_list.append(perm)
+    for perm in perm_list:
+        target.permissions.append(perm)
+
+
+@event.listens_for(Group, 'before_delete')
+def delete_group_permission(mapper, connection, target):
+    method_list = ['GET', 'POST', 'PUT', 'DELETE']
+    for method in method_list:
+        name = target.name + '组' + '允许' + method + '请求'
+        perm = Permission.query.filter_by(
+            name=name, allow=Permission.PERMISSION_ALLOW).first()
+        if perm is not None:
+            object_session(target).delete(perm)
+
+        name = target.name + '组' + '禁止' + method + '请求'
+        perm = Permission.query.filter_by(
+            name=name, allow=Permission.PERMISSION_DENY).first()
+        if perm is not None:
+            object_session(target).delete(perm)
