@@ -1,13 +1,13 @@
 #!/usr/bin/env python
-# -*- coding=UTF-8 -*-
+# -*- coding: utf-8 -*-
 # **************************************************************************
 # Copyright © 2016 jianglin
-# File Name: auth.py
+# File Name: views.py
 # Author: jianglin
 # Email: xiyang0807@gmail.com
-# Created: 2016-04-24 20:03:48 (CST)
-# Last Update:星期六 2016-11-5 19:51:36 (CST)
-#          By: jianglin
+# Created: 2016-12-07 14:01:14 (CST)
+# Last Update:星期三 2016-12-7 14:1:46 (CST)
+#          By:
 # Description:
 # **************************************************************************
 from flask import (request, session, flash, render_template, url_for, redirect,
@@ -19,8 +19,9 @@ from datetime import datetime
 from random import sample
 from string import ascii_letters, digits
 from functools import wraps
-from .response import HTTPResponse
-from .forms import LoginForm, RegisterForm, ForgetForm, return_errors
+from flask_maple.response import HTTPResponse
+from flask_maple.forms import (LoginForm, RegisterForm, ForgetForm,
+                               return_errors)
 
 
 def guest_permission(func):

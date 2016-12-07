@@ -11,7 +11,7 @@ from flask import flash, session
 from wtforms import (StringField, PasswordField, BooleanField)
 from wtforms.validators import Length, DataRequired, Email
 from flask_babelex import lazy_gettext as _
-from .response import HTTPResponse
+from flask_maple.response import HTTPResponse
 
 try:
     from flask_wtf import FlaskForm as Form
