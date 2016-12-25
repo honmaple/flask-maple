@@ -6,14 +6,14 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期三 2016-12-7 14:1:46 (CST)
+# Last Update:星期一 2016-12-12 0:55:25 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask import (request, session, flash, render_template, url_for, redirect,
                    current_app)
 from flask.views import MethodView
-from flask_babelex import gettext as _
+from flask_maple.babel import gettext as _
 from flask_login import login_user, logout_user, current_user, login_required
 from datetime import datetime
 from random import sample
@@ -172,8 +172,8 @@ class ForgetBaseView(MethodView):
                 user.save()
                 self.forget_email(user.email, password)
                 flash(
-                    _('An email has been sent to you.\
-                      Please receive and update your password in time'))
+                    _('An email has been sent to you.'
+                      'Please receive and update your password in time'))
                 return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
             else:
                 return HTTPResponse(
@@ -223,8 +223,8 @@ class ConfirmTokenBaseView(MethodView):
     def get(self, token):
         email = self.mail.custom_confirm_token(token)
         if not email:
-            msg = _('The confirm link has been out of time.\
-                   Please confirm your email again')
+            msg = _('The confirm link has been out of time.'
+                    'Please confirm your email again')
             flash(msg)
             return redirect('/')
         user = self.user_model.query.filter_by(email=email).first()

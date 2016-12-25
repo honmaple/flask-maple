@@ -6,12 +6,13 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 12:59:40 (CST)
-# Last Update:星期三 2016-12-7 22:40:10 (CST)
+# Last Update:星期一 2016-12-12 10:41:2 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask import Flask, render_template, request, abort
 from flask import jsonify
+from flask import config
 from flask_maple.models import db
 from flask_maple.auth.models import User
 
@@ -37,42 +38,65 @@ def create_app(config=None):
     return app
 
 
+from flask_babelex import Babel, Domain
+import os
+
+
+def register_babel():
+    from flask_maple import translations
+    translations = translations.__path__[0]
+    domain = Domain(translations)
+    babel = Babel()
+
+    @babel.localeselector
+    def get_locale():
+        return 'zh'
+
+    @babel.timezoneselector
+    def get_timezone():
+        return 'UTC'
+
+    return babel
+
+
 app = create_app()
 db.init_app(app)
+register_babel().init_app(app)
 
 from sqlalchemy import inspect
 from flask_maple.serializer import Serializer
+from flask_maple.utils import get_columns
+from flask_maple.views import ViewList, View
+from flask_maple.permission.models import Group
+
+
+class GroupViewList(ViewList):
+    model = Group
+    serializer_kwargs = {'many': True}
+
+
+class GroupView(View):
+    model = Group
+    serializer_kwargs = {'many': False}
+
+
+app.add_url_rule('/s', view_func=GroupViewList.as_view('s'))
+app.add_url_rule('/s/<int:id>', view_func=GroupView.as_view('ss'))
+
+from flask_maple.rbac import rbac
 
 
 @app.route('/')
 def index():
-    from flask_maple.permission.models import Group
-    # group = Group()
-    # group.name = 'assdasdda啊as达'
-    # db.session.add(group)
-    # db.session.commit()
-    # inp = inspect(Group)
-    # print(inp.c)
-    # for column in inp.columns:
-    #     print(column.name)
-    # for relation in inp.relationships:
-    #     print(relation)
-    #     print(type( relation.direction))
-    #     print(relation.lazy)
-    #     print(relation.key)
-    #     # print(dir(relation))
-    group = Group.query.paginate(1, 1, True)
-    # group = Group.query.first()
-
-    user = User.query.all()
-    user = User.query.first()
-    # print(user.__class__)
-    # # sqlalchemy.orm.interfaces.MANYTOONE
+    group = Group.query.filter_by(**{'name': 1}).paginate(1, 1, True)
     a = Serializer(group, many=True, depth=3, exclude=['groups']).data
-    print(a)
-
-    return jsonify(a=a)
-    # return 'a'
+    from flask_maple.response import HTTPResponse
+    from flask_maple.auth.forms import LoginForm
+    form = LoginForm()
+    print(form.username.label)
+    print(form.password.label)
+    return HTTPResponse(HTTPResponse.FORBIDDEN).to_response()
+    # return jsonify(**a)
 
 
 if __name__ == '__main__':

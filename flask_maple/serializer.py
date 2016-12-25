@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期三 2016-12-7 22:39:15 (CST)
+# Last Update:星期二 2016-12-20 22:9:21 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -54,21 +54,7 @@ class Serializer(object):
         if self.include and self.exclude:
             raise ValueError('include and exclude can\'t work together')
         if self.many:
-            if isinstance(self.instance, list):
-                return self._serializerlist(self.instance, self.depth)
-            pageinfo = {
-                'items': True,
-                'pages': self.instance.pages,
-                'has_prev': self.instance.has_prev,
-                'page': self.instance.page,
-                'has_next': self.instance.has_next,
-                'iter_pages': list(self.instance.iter_pages(left_edge=1,
-                                                            left_current=2,
-                                                            right_current=3,
-                                                            right_edge=1))
-            }
-            return {'data': self._serializerlist(self.instance.items, self.depth),
-                    'pageinfo': pageinfo}
+            return self._serializerlist(self.instance, self.depth)
         return self._serializer(self.instance, self.depth)
 
     def _serializerlist(self, instances, depth):
@@ -104,24 +90,30 @@ class Serializer(object):
         relation_columns = self.get_relation_columns(inp)
         for relation in relation_columns:
             column = relation.key
-            if relation.direction in [ONETOMANY, MANYTOMANY]:
+            if relation.direction in [ONETOMANY, MANYTOMANY] and relation.uselist:
                 children = getattr(instance, column)
                 if relation.lazy == 'dynamic':
                     children = children.all()
-                result[column] = Serializer(
-                    children,
-                    many=True,
-                    exclude=[relation.back_populates],
-                    depth=depth).data
+                if children:
+                    result[column] = Serializer(
+                        children,
+                        many=True,
+                        exclude=[relation.back_populates],
+                        depth=depth).data
+                else:
+                    result[column] = []
             else:
                 child = getattr(instance, column)
                 if relation.lazy == 'dynamic':
                     child = child.first()
-                result[column] = Serializer(
-                    child,
-                    many=False,
-                    exclude=[relation.back_populates],
-                    depth=depth).data
+                if child:
+                    result[column] = Serializer(
+                        child,
+                        many=False,
+                        exclude=[relation.back_populates],
+                        depth=depth).data
+                else:
+                    result[column] = {}
         return result
 
     def get_model_class(self, instance):
@@ -160,3 +152,28 @@ class Serializer(object):
         else:
             relation_columns = [relation for relation in inp.relationships]
         return relation_columns
+
+class FlaskSerializer(Serializer):
+
+    @property
+    def data(self):
+        if self.include and self.exclude:
+            raise ValueError('include and exclude can\'t work together')
+        if self.many:
+            if isinstance(self.instance, list):
+                return self._serializerlist(self.instance, self.depth)
+            pageinfo = {
+                'items': True,
+                'pages': self.instance.pages,
+                'has_prev': self.instance.has_prev,
+                'page': self.instance.page,
+                'has_next': self.instance.has_next,
+                'iter_pages': list(self.instance.iter_pages(left_edge=1,
+                                                            left_current=2,
+                                                            right_current=3,
+                                                            right_edge=1))
+            }
+            return {'data': self._serializerlist(self.instance.items,
+                                                 self.depth),
+                    'pageinfo': pageinfo}
+        return self._serializer(self.instance, self.depth)

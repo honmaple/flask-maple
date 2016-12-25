@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期六 2016-11-26 13:41:27 (CST)
+# Last Update:星期四 2016-12-15 23:2:7 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -142,8 +142,8 @@ class ModelMixin(Model):
         return choice.get(value, value)
 
     @classmethod
-    def get(cls, pk):
-        return cls.query.filter_by(id=pk).first_or_404()
+    def get(cls, **filter_dict):
+        return cls.query.filter_by(**filter_dict).first_or_404()
 
     @classmethod
     def get_list(cls,

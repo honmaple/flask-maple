@@ -1,13 +1,13 @@
-# Chinese translations for PROJECT.
+# Chinese translations for .
 # Copyright (C) 2016 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
+# This file is distributed under the same license as the  project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: flask-maple\n"
+"Project-Id-Version:  flask-maple\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-07 21:16+0800\n"
+"POT-Creation-Date: 2016-12-12 00:55+0800\n"
 "PO-Revision-Date: 2016-07-07 21:16+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -18,83 +18,91 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: ../flask_maple/auth.py:36
-msgid "You have logined in ,needn't login again"
-msgstr "你已经登陆，不能重复登陆"
+#: ../flask_maple/response.py:31
+msgid "Username or Password Error"
+msgstr "用户名或密码错误"
 
-#: ../flask_maple/auth.py:100
-msgid "You have logined in"
-msgstr "登陆成功!"
+#: ../flask_maple/response.py:32
+msgid "Captcha Error"
+msgstr "验证码错误"
 
-#: ../flask_maple/auth.py:103
-msgid "Name or Password is error"
-msgstr "昵称或密码错误"
-
-#: ../flask_maple/auth.py:133
-msgid "The name has been registered"
-msgstr "昵称已被注册"
-
-#: ../flask_maple/auth.py:136
+#: ../flask_maple/response.py:33
 msgid "The email has been registered"
 msgstr "邮箱已被注册"
 
-#: ../flask_maple/auth.py:143 ../flask_maple/auth.py:202
-msgid "An email has been sent to your.Please receive"
-msgstr "一封邮件已发送到你的邮箱，请查收"
+#: ../flask_maple/response.py:34
+msgid "The username has been registered"
+msgstr "用户名已被注册"
 
-#: ../flask_maple/auth.py:163
-msgid ""
-"An email has been sent to you.Please receive and update your password in "
-"time"
-msgstr "一封邮件已发送到你的邮箱，请查收并及时修改你的密码"
-
-#: ../flask_maple/auth.py:167
+#: ../flask_maple/response.py:35
 msgid "The email is error"
 msgstr "邮箱未注册"
 
-#: ../flask_maple/auth.py:179
-msgid "The confirm link has been out of time.Please confirm your email again"
-msgstr "验证链接已过期,请重新验证你的帐号"
-
-#: ../flask_maple/auth.py:184
-msgid "The email has been confirmed. Please login."
-msgstr "邮箱已验证成功，请登陆"
-
-#: ../flask_maple/auth.py:196
+#: ../flask_maple/response.py:37
 msgid "Your account has been confirmed,don't need again"
 msgstr "你的账户已经验证，不能重复验证"
 
-#: ../flask_maple/auth.py:226
-msgid "Please confirm  your email"
-msgstr "请验证你的邮箱"
+#: ../flask_maple/response.py:38
+msgid "Form validate error"
+msgstr "表单验证错误"
 
-#: ../flask_maple/forms.py:32
+#: ../flask_maple/response.py:39
+msgid "You have no permission!"
+msgstr "你没有权限!"
+
+#: ../flask_maple/auth/forms.py:41
 msgid "Username:"
 msgstr "昵称:"
 
-#: ../flask_maple/forms.py:34
+#: ../flask_maple/auth/forms.py:44
 msgid "Password:"
 msgstr "密码:"
 
-#: ../flask_maple/forms.py:36 ../flask_maple/forms.py:65
+#: ../flask_maple/auth/forms.py:47 ../flask_maple/auth/forms.py:76
 msgid "Captcha:"
 msgstr "验证码"
 
-#: ../flask_maple/forms.py:46 ../flask_maple/forms.py:75
+#: ../flask_maple/auth/forms.py:58 ../flask_maple/auth/forms.py:87
 msgid "The captcha is error"
 msgstr "验证码错误"
 
-#: ../flask_maple/forms.py:53
+#: ../flask_maple/auth/forms.py:65
 msgid "Email:"
 msgstr "邮箱:"
 
-#: ../flask_maple/forms.py:57
+#: ../flask_maple/auth/forms.py:69
 msgid "Remember me"
 msgstr "记住我"
 
-#: ../flask_maple/forms.py:62
+#: ../flask_maple/auth/forms.py:73
 msgid "Register Email:"
 msgstr "注册邮箱"
+
+#: ../flask_maple/auth/views.py:31
+msgid "You have logined in ,needn't login again"
+msgstr "你已经登陆，不能重复登陆"
+
+#: ../flask_maple/auth/views.py:124 ../flask_maple/auth/views.py:203
+msgid "An email has been sent to your.Please receive"
+msgstr "一封邮件已发送到你的邮箱，请查收"
+
+#: ../flask_maple/auth/views.py:150 ../flask_maple/auth/views.py:215
+msgid "Please confirm  your email"
+msgstr "请验证你的邮箱"
+
+#: ../flask_maple/auth/views.py:175
+msgid ""
+"An email has been sent to you.Please receive and update your password in "
+"time"
+msgstr "一封邮件已发送到你的邮箱,请及时查收"
+
+#: ../flask_maple/auth/views.py:226
+msgid "The confirm link has been out of time.Please confirm your email again"
+msgstr "验证链接已过期,请重新验证你的帐号"
+
+#: ../flask_maple/auth/views.py:232
+msgid "The email has been confirmed. Please login."
+msgstr "邮箱已验证成功，请登陆"
 
 #: ../flask_maple/templates/maple/auth.html:49
 msgid "confirm"
@@ -119,4 +127,25 @@ msgstr "注册"
 #: ../flask_maple/templates/maple/captcha.html:2
 msgid "Captcha"
 msgstr "验证码"
+
+#~ msgid "You have logined in"
+#~ msgstr "登陆成功!"
+
+#~ msgid "Name or Password is error"
+#~ msgstr "昵称或密码错误"
+
+#~ msgid "The name has been registered"
+#~ msgstr "昵称已被注册"
+
+#~ msgid ""
+#~ msgstr ""
+
+#~ msgid "The confirm link has been out of time.Please confirm your email again"
+#~ msgstr "验证链接已过期,请重新验证你的帐号"
+
+#~ msgid ""
+#~ "The confirm link has been out of"
+#~ " time.                   Please confirm your "
+#~ "email again"
+#~ msgstr ""
 

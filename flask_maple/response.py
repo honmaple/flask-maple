@@ -6,12 +6,12 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期六 2016-11-26 15:7:27 (CST)
+# Last Update:星期一 2016-12-12 0:12:51 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask import jsonify
-from flask_babelex import gettext as _
+from flask_maple.babel import gettext as _
 
 
 class HTTPResponse(object):

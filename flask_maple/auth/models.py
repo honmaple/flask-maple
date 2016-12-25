@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期三 2016-12-7 13:54:28 (CST)
+# Last Update:星期六 2016-12-10 14:26:32 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,6 +14,8 @@ from flask_maple.models import db
 from flask_maple.permission.models import Group
 from datetime import datetime
 from werkzeug.security import (generate_password_hash, check_password_hash)
+from flask_maple.mail import UserMailMixin
+from flask_maple.models import ModelMixin
 
 group_user = db.Table(
     'group_user',
@@ -58,7 +60,7 @@ class UserMixin(object):
         return not equal
 
 
-class User(db.Model):
+class User(db.Model, UserMailMixin, ModelMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(49), unique=True)
