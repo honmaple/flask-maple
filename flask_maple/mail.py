@@ -10,38 +10,44 @@
 from flask_mail import Mail
 from flask_mail import Message
 from threading import Thread
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import (URLSafeTimedSerializer, BadSignature,
+                          SignatureExpired)
 from flask import current_app
+from .utils import gen_secret_key
+
+mail = Mail()
 
 
-class MapleMail(Mail):
-    def init_app(self, app):
-        self.app = app
-        super(MapleMail, self).init_app(app)
+class MailMixin(object):
+    def send_async_email(self, msg):
+        # app = current_app._get_current_object()
+        # with app.app_context():
+        mail.send(msg)
 
-    def send_async_email(self, app, msg):
-        with app.app_context():
-            self.send(msg)
-
-    def custom_email_send(self, to, template, subject):
-        msg = Message(subject, recipients=[to], html=template)
-        thr = Thread(target=self.send_async_email, args=[self.app, msg])
+    def send_email(self, **kwargs):
+        msg = Message(**kwargs)
+        thr = Thread(target=self.send_async_email, args=[msg])
         thr.start()
 
-    def custom_email_token(self, email):
+    @property
+    def email_token(self):
         config = current_app.config
-        serializer = URLSafeTimedSerializer(config['SECRET_KEY'])
-        token = serializer.dumps(email, salt=config['SECURITY_PASSWORD_SALT'])
+        secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
+        salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
+        serializer = URLSafeTimedSerializer(secret_key, salt=salt)
+        token = serializer.dumps(self.email)
         return token
 
-    def custom_confirm_token(self, token, expiration=360):
+    @staticmethod
+    def check_email_token(token, max_age=259200):
         config = current_app.config
-        serializer = URLSafeTimedSerializer(config['SECRET_KEY'])
+        secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
+        salt = config.setdefault('SECURITY_PASSWORD_SALT', gen_secret_key(24))
+        serializer = URLSafeTimedSerializer(secret_key, salt=salt)
         try:
-            email = serializer.loads(
-                token,
-                salt=config['SECURITY_PASSWORD_SALT'],
-                max_age=expiration)
-        except:
+            email = serializer.loads(token, max_age=max_age)
+        except BadSignature:
+            return False
+        except SignatureExpired:
             return False
         return email

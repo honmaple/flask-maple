@@ -6,12 +6,12 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期六 2016-11-26 15:7:27 (CST)
+# Last Update:星期二 2017-3-14 21:11:59 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask import jsonify
-from flask_babelex import gettext as _
+from .babel import gettext as _
 
 
 class HTTPResponse(object):
@@ -21,10 +21,12 @@ class HTTPResponse(object):
     LOGIN_USERNAME_UNIQUE = '303'
     LOGIN_EMAIL_UNIQUE = '303'
     FORGET_EMAIL_NOT_REGISTER = '304'
-    USER_IS_CONFIRMED = '305',
+    USER_IS_CONFIRMED = '305'
     FORM_VALIDATE_ERROR = '305'
 
     FORBIDDEN = '403'
+    HTTP_CODE_PARA_ERROR = '401'
+    HTTP_CODE_NOT_FOUNT = '404'
 
     STATUS_DESCRIPTION = {
         NORMAL_STATUS: 'normal',
@@ -36,17 +38,19 @@ class HTTPResponse(object):
         USER_IS_CONFIRMED:
         _('Your account has been confirmed,don\'t need again'),
         FORM_VALIDATE_ERROR: _('Form validate error'),
-        FORBIDDEN: _('You have no permission!')
+        FORBIDDEN: _('You have no permission!'),
+        HTTP_CODE_PARA_ERROR: 'params error',
+        HTTP_CODE_NOT_FOUNT: '404',
     }
 
     def __init__(self,
                  status='200',
                  message='',
-                 data=None,
+                 data='',
                  description='',
-                 pageinfo=None):
+                 pageinfo=''):
         self.status = status
-        self.message = self.STATUS_DESCRIPTION.get(status)
+        self.message = message or self.STATUS_DESCRIPTION.get(status)
         self.data = data
         self.description = description
         self.pageinfo = pageinfo
@@ -59,7 +63,7 @@ class HTTPResponse(object):
             'description': self.description,
         }
         if self.pageinfo is not None:
-            response.update(pageinfo=self.pageinfo)
+            response.update(pageinfo=self.pageinfo.as_dict())
         return response
 
     def to_response(self):

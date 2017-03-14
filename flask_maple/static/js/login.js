@@ -57,7 +57,7 @@ $(document).ready(function(){
       type : "POST",
       url : url.forget,
       data:JSON.stringify({
-        confirm_email: $('#confirm_email').val(),
+        email: $('#email').val(),
         captcha:$("#captcha").val()
       }),
       contentType: 'application/json;charset=UTF-8',

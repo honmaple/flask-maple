@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-05-18 16:34:19 (CST)
-# Last Update:星期二 2016-11-8 23:5:32 (CST)
+# Last Update:星期四 2016-12-29 20:43:55 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,8 +14,7 @@ from flask import render_template, current_app
 
 
 class Error(object):
-    def __init__(self, app=None, use_log=False):
-        self.use_log = use_log
+    def __init__(self, app=None):
         self.app = app
         if app is not None:
             self.init_app(app)

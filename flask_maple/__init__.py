@@ -6,11 +6,10 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 19:04:49 (CST)
-# Last Update:星期二 2016-11-1 20:47:12 (CST)
+# Last Update:星期日 2016-12-25 15:34:4 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
-from .auth import Auth
-from .captcha import Captcha
 from .bootstrap import Bootstrap
+from .captcha import Captcha
 from .error import Error

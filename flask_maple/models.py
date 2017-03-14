@@ -6,16 +6,32 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期六 2016-11-26 13:41:27 (CST)
+# Last Update:星期二 2017-3-14 21:18:28 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import BaseQuery, Model
-from sqlalchemy.orm import joinedload, joinedload_all
+from sqlalchemy.orm.exc import NoResultFound,MultipleResultsFound
+from sqlalchemy import or_, and_
+from sqlalchemy.orm import joinedload, joinedload_all, load_only
 from sqlalchemy.orm.base import _entity_descriptor
 from sqlalchemy.util import to_list
 from sqlalchemy.sql import operators, extract
+from sqlalchemy.ext.declarative import declared_attr
+from datetime import datetime
+
+
+class DoesNotExist(Exception):
+    pass
+
+
+class ObjectDoesNotExist(Exception):
+    def __init__(self, model):
+        self.model = model
+
+    def __str__(self):
+        return '%s DoesNotExist' % self.model.__name__
 
 
 class QueryMixin(BaseQuery):
@@ -94,7 +110,10 @@ class QueryMixin(BaseQuery):
 
     def _filter_or_exclude(self, negate, kwargs):
         q = self
-        negate_if = lambda expr: expr if not negate else ~expr
+
+        def negate_if(expr):
+            return expr if not negate else ~expr
+
         column = None
 
         for arg, value in kwargs.items():
@@ -104,6 +123,10 @@ class QueryMixin(BaseQuery):
                     if column.impl.uses_objects:
                         q = q.join(column)
                         column = None
+                elif token in ['in']:
+                    op = self._underscore_operators[token]
+                    q = q.filter(negate_if(op(column, value)))
+                    column = None
                 elif token in self._underscore_operators:
                     op = self._underscore_operators[token]
                     q = q.filter(negate_if(op(column, *to_list(value))))
@@ -116,11 +139,37 @@ class QueryMixin(BaseQuery):
             q = q.reset_joinpoint()
         return q
 
+    def load_only(self, *columns):
+        return self.options(load_only(*columns))
+
+    def or_(self, *kwargs):
+        return self.filter(or_(*kwargs))
+
+    def and_(self, *kwargs):
+        return self.filter(and_(*kwargs))
+
+    def exists(self):
+        session = self.session
+        return session.query(super(QueryMixin, self).exists()).scalar()
+
+    # def one(self):
+    #     return super(QueryMixin, self).one()
+
+    # class CustomModel(Model):
+    #     def __new__(self)
+
 
 db = SQLAlchemy(query_class=QueryMixin)
 
 
-class ModelMixin(Model):
+class ModelMixin(object):
+    NoResultFound = NoResultFound
+    MultipleResultsFound = MultipleResultsFound
+
+    @declared_attr
+    def id(cls):
+        return db.Column(db.Integer, primary_key=True)
+
     def save(self):
         if not self.id:
             db.session.add(self)
@@ -129,6 +178,33 @@ class ModelMixin(Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    # @classmethod
+    # def bulk_create(cls, instances):
+    #     db.session.add_all(instances)
+    #     db.session.commit()
+
+    @classmethod
+    def bulk_insert(cls, mappings, return_defaults=False):
+        b = db.session.bulk_insert_mappings(cls, mappings, return_defaults)
+        db.session.commit()
+        return b
+
+    @classmethod
+    def bulk_update(cls, mappings):
+        b = db.session.bulk_update_mappings(cls, mappings)
+        db.session.commit()
+        return b
+
+    @classmethod
+    def bulk_save(cls,
+                  objects,
+                  return_defaults=False,
+                  update_changed_only=True):
+        b = db.session.bulk_save_objects(
+            objects, return_defaults=False, update_changed_only=True)
+        db.session.commit()
+        return b
 
     def get_choice_display(self, column, choice):
         if not hasattr(self, column):
@@ -142,8 +218,13 @@ class ModelMixin(Model):
         return choice.get(value, value)
 
     @classmethod
-    def get(cls, pk):
-        return cls.query.filter_by(id=pk).first_or_404()
+    def get_one(cls, **filter_dict):
+        return cls.query.filter_by(**filter_dict).one()
+
+    @classmethod
+    def get(cls, **filter_dict):
+        instance = cls.query.filter_by(**filter_dict).first()
+        return instance
 
     @classmethod
     def get_list(cls,
@@ -159,5 +240,38 @@ class ModelMixin(Model):
                 sort_tuple = (order_by, )
             else:
                 sort_tuple = ('id', )
-        return cls.query.filter_by(**filter_dict).order_by(
-            *sort_tuple).paginate(page, number, True)
+        return cls.query.filter_by(
+            **filter_dict).order_by(*sort_tuple).paginate(page, number, True)
+
+
+class ModelTimeMixin(ModelMixin):
+    @declared_attr
+    def created_at(cls):
+        return db.Column(db.DateTime, default=datetime.utcnow())
+
+    @declared_attr
+    def updated_at(cls):
+        return db.Column(
+            db.DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
+
+
+class ModelUserMixin(ModelTimeMixin):
+    @declared_attr
+    def user_id(cls):
+        return db.Column(
+            db.Integer, db.ForeignKey(
+                'user.id', ondelete="CASCADE"))
+
+    @declared_attr
+    def user(cls):
+        name = cls.__name__.lower()
+        if not name.endswith('s'):
+            name = name + 's'
+        if hasattr(cls, 'user_related_name'):
+            name = cls.user_related_name
+        return db.relationship(
+            'User',
+            backref=db.backref(
+                name, cascade='all,delete', lazy='dynamic'),
+            uselist=False,
+            lazy='joined')

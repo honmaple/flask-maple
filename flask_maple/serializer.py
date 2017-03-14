@@ -6,116 +6,191 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期二 2016-11-8 23:3:41 (CST)
+# Last Update:星期二 2017-3-14 21:9:29 (CST)
 #          By:
 # Description:
 # **************************************************************************
+from sqlalchemy import inspect
+from sqlalchemy.orm.interfaces import (ONETOMANY, MANYTOMANY)
 
 
-class SerializerData(dict):
-    def __init__(self, *args, **kwargs):
-        super(SerializerData, self).__init__(*args, **kwargs)
-        if kwargs:
-            for k, v in kwargs.items():
-                self[k] = v
+class PageInfo(object):
+    def __init__(self, paginate):
+        self.paginate = paginate
 
-    def __getattr__(self, attr):
-        return self.get(attr)
-
-    def __setattr__(self, key, value):
-        self.__setitem__(key, value)
-
-    def __setitem__(self, key, value):
-        super(SerializerData, self).__setitem__(key, value)
-        self.__dict__.update({key: value})
-
-    def __delattr__(self, item):
-        self.__delitem__(item)
-
-    def __delitem__(self, key):
-        super(SerializerData, self).__delitem__(key)
-        del self.__dict__[key]
-
-
-class Serializer(object):
-    def __init__(self, instance, many=False):
-        self.instance = instance
-        self.many = many
-        meta = getattr(self, 'Meta')
-        self.fields = getattr(meta, 'fields')
-        self.model = getattr(meta, 'model')
-
-    @property
-    def data(self):
-        if self.many:
-            self.paginate = self.instance
-            self.instance = self.instance.items
-            return self._serializerlist()
-        return self._serializer()
-
-    def _has_child(self, serializer, instance, field):
-        if hasattr(serializer, field):
-            return self.child_init(serializer, instance, field)
-        return getattr(instance, field)
-
-    def _serializer(self):
-        data = SerializerData()
-        for field in self.fields:
-            if not hasattr(self.model, field):
-                raise ValueError('"{0}" field does not exist.'.format(field))
-            data[field] = self._has_child(self, self.instance, field)
-        return data
-
-    def _serializerlist(self):
-        datalist = []
-        for instance in self.instance:
-            data = SerializerData()
-            for field in self.fields:
-                if not hasattr(self.model, field):
-                    raise ValueError('"{0}" field does not exist.'.format(
-                        field))
-                data[field] = self._has_child(self, instance, field)
-            datalist.append(data)
+    def as_dict(self):
         pageinfo = {
-            'items': True if datalist else False,
+            'items': True,
             'pages': self.paginate.pages,
             'has_prev': self.paginate.has_prev,
             'page': self.paginate.page,
             'has_next': self.paginate.has_next,
-            'iter_pages': list(self.paginate.iter_pages(left_edge=1,
-                                                        left_current=2,
-                                                        right_current=3,
-                                                        right_edge=1))
+            'iter_pages': list(
+                self.paginate.iter_pages(
+                    left_edge=1, left_current=2, right_current=3,
+                    right_edge=1))
         }
-        return datalist, SerializerData(pageinfo)
+        return pageinfo
 
-    def child_init(self, serializer, instance, field):
-        # 子序列
-        child_serializer = getattr(serializer, field)
-        child_meta = getattr(child_serializer, 'Meta')
-        child_fields = getattr(child_meta, 'fields')
-        child_instance = getattr(instance, field)
-        if not isinstance(child_instance, (list, )):
-            return self._child_serializer(child_serializer, child_instance,
-                                          child_fields)
-        return self._child_serializerlist(child_serializer, child_instance,
-                                          child_fields)
 
-    def _child_serializer(self, serializer, instance, fields):
-        data = SerializerData()
-        for field in fields:
-            data[field] = self._has_child(serializer, instance, field)
-        return data
+class Field(object):
+    def __init__(self, source, args={}, default=None):
+        self.source = source
+        self.args = args
+        self.default = default
 
-    def _child_serializerlist(self, serializer, instances, fields):
-        datalist = []
+    def data(self, instance):
+        if hasattr(instance, self.source):
+            source = getattr(instance, self.source)
+            if not callable(source):
+                return source
+            return source(**self.args)
+        return self.default
+
+
+class Serializer(object):
+    def __init__(self,
+                 instance,
+                 many=False,
+                 include=[],
+                 exclude=[],
+                 extra=[],
+                 depth=2):
+        self.instance = instance
+        self.many = many
+        self.depth = depth
+        self.include = include
+        self.exclude = exclude
+        self.extra = extra
+
+    @property
+    def data(self):
+        meta = self.Meta
+        if not self.include and hasattr(meta, 'include'):
+            self.include = meta.include
+        if not self.exclude and hasattr(meta, 'exclude'):
+            self.exclude = meta.exclude
+        if not self.extra and hasattr(meta, 'extra'):
+            self.extra = meta.extra
+        # if not self.depth:
+        #     self.depth = meta.depth if hasattr(meta, 'depth') else 2
+        # if self.include and self.exclude:
+        #     raise ValueError('include and exclude can\'t work together')
+        if self.many:
+            return self._serializerlist(self.instance, self.depth)
+        return self._serializer(self.instance, self.depth)
+
+    def _serializerlist(self, instances, depth):
+        results = []
         for instance in instances:
-            data = SerializerData()
-            for field in fields:
-                data[field] = self._has_child(serializer, instance, field)
-            datalist.append(data)
-        return datalist
+            result = self._serializer(instance, depth)
+            if result:
+                results.append(result)
+        return results
+
+    def _serializer(self, instance, depth):
+        result = {}
+        if depth == 0:
+            return result
+        depth -= 1
+        model_class = self.get_model_class(instance)
+        inp = self.get_inspect(model_class)
+        model_data = self._serializer_model(inp, instance, depth)
+        relation_data = self._serializer_relation(inp, instance, depth)
+        extra_data = self._serializer_extra(instance)
+        result.update(model_data)
+        result.update(relation_data)
+        result.update(extra_data)
+        return result
+
+    def _serializer_extra(self, instance):
+        extra = self.extra
+        result = {}
+        for e in extra:
+            # extra_column = getattr(self, e)
+            # if isinstance(extra_column, Field):
+            #     result[e] = extra_column.data(instance)
+            # else:
+            extra_column = getattr(instance, e)
+            result[e] = extra_column if not callable(
+                extra_column) else extra_column()
+        return result
+
+    def _serializer_model(self, inp, instance, depth):
+        result = {}
+        model_columns = self.get_model_columns(inp)
+        for column in model_columns:
+            result[column] = getattr(instance, column)
+        return result
+
+    def _serializer_relation(self, inp, instance, depth):
+        result = {}
+        relation_columns = self.get_relation_columns(inp)
+        for relation in relation_columns:
+            column = relation.key
+            serializer = Serializer
+            if hasattr(self, column):
+                serializer = getattr(self, column)
+            if relation.direction in [ONETOMANY, MANYTOMANY
+                                      ] and relation.uselist:
+                children = getattr(instance, column)
+                if relation.lazy == 'dynamic':
+                    children = children.all()
+                result[column] = serializer(
+                    children,
+                    many=True,
+                    exclude=[relation.back_populates],
+                    depth=depth).data if children else []
+            else:
+                child = getattr(instance, column)
+                if relation.lazy == 'dynamic':
+                    child = child.first()
+                result[column] = serializer(
+                    child,
+                    many=False,
+                    exclude=[relation.back_populates],
+                    depth=depth).data if child else {}
+        return result
+
+    def get_model_class(self, instance):
+        return getattr(instance, '__class__')
+
+    def get_inspect(self, model_class):
+        return inspect(model_class)
+
+    def get_model_columns(self, inp):
+        if self.include:
+            model_columns = [
+                column.name for column in inp.columns
+                if column.name in self.include
+            ]
+        elif self.exclude:
+            model_columns = [
+                column.name for column in inp.columns
+                if column.name not in self.exclude
+            ]
+        else:
+            model_columns = [column.name for column in inp.columns]
+
+        return model_columns
+
+    def get_relation_columns(self, inp):
+        if self.include:
+            relation_columns = [
+                relation for relation in inp.relationships
+                if relation.key in self.include
+            ]
+        elif self.exclude:
+            relation_columns = [
+                relation for relation in inp.relationships
+                if relation.key not in self.exclude
+            ]
+        else:
+            relation_columns = [relation for relation in inp.relationships]
+        return relation_columns
 
     class Meta:
-        model = None
-        fields = []
+        depth = 2
+        include = []
+        exclude = []
+        extra = []
