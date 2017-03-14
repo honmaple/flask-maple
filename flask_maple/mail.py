@@ -36,21 +36,23 @@ class UserMailMixin(object):
         thr = Thread(target=self.send_async_email, args=[msg])
         thr.start()
 
+    @property
     def email_token(self):
         config = current_app.config
         secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
-        salt = config.setdefault('SECURITY_PASSWORD_SALT', gen_secret_key(24))
+        salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
         serializer = URLSafeTimedSerializer(secret_key)
         token = serializer.dumps(self.email, salt=salt)
         return token
 
-    def confirm_email_token(self, token, expiration=360):
+    @staticmethod
+    def check_email_token(token, max_age=259200):
         config = current_app.config
         secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
         salt = config.setdefault('SECURITY_PASSWORD_SALT', gen_secret_key(24))
         serializer = URLSafeTimedSerializer(secret_key)
         try:
-            email = serializer.loads(token, salt=salt, max_age=expiration)
+            email = serializer.loads(token, salt=salt, max_age=max_age)
         except BadSignature:
             return False
         except SignatureExpired:

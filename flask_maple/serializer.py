@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期二 2016-12-20 22:9:21 (CST)
+# Last Update:星期三 2017-1-25 22:16:9 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -15,7 +15,6 @@ from sqlalchemy.orm.interfaces import (ONETOMANY, MANYTOMANY)
 
 
 class SerializerData(dict):
-
     def __init__(self, *args, **kwargs):
         super(SerializerData, self).__init__(*args, **kwargs)
         if kwargs:
@@ -41,13 +40,18 @@ class SerializerData(dict):
 
 
 class Serializer(object):
-
     def __init__(self, instance, many=False, include=[], exclude=[], depth=2):
         self.instance = instance
         self.many = many
-        self.include = include
-        self.exclude = exclude
         self.depth = depth
+        if hasattr(self, 'include'):
+            self.include = include or self.include
+        else:
+            self.include = include
+        if hasattr(self, 'exclude'):
+            self.exclude = exclude or self.exclude
+        else:
+            self.exclude = exclude
 
     @property
     def data(self):
@@ -90,7 +94,8 @@ class Serializer(object):
         relation_columns = self.get_relation_columns(inp)
         for relation in relation_columns:
             column = relation.key
-            if relation.direction in [ONETOMANY, MANYTOMANY] and relation.uselist:
+            if relation.direction in [ONETOMANY, MANYTOMANY
+                                      ] and relation.uselist:
                 children = getattr(instance, column)
                 if relation.lazy == 'dynamic':
                     children = children.all()
@@ -153,8 +158,8 @@ class Serializer(object):
             relation_columns = [relation for relation in inp.relationships]
         return relation_columns
 
-class FlaskSerializer(Serializer):
 
+class FlaskSerializer(Serializer):
     @property
     def data(self):
         if self.include and self.exclude:
@@ -168,12 +173,15 @@ class FlaskSerializer(Serializer):
                 'has_prev': self.instance.has_prev,
                 'page': self.instance.page,
                 'has_next': self.instance.has_next,
-                'iter_pages': list(self.instance.iter_pages(left_edge=1,
-                                                            left_current=2,
-                                                            right_current=3,
-                                                            right_edge=1))
+                'iter_pages': list(
+                    self.instance.iter_pages(
+                        left_edge=1,
+                        left_current=2,
+                        right_current=3,
+                        right_edge=1))
             }
-            return {'data': self._serializerlist(self.instance.items,
-                                                 self.depth),
-                    'pageinfo': pageinfo}
+            return {
+                'data': self._serializerlist(self.instance.items, self.depth),
+                'pageinfo': pageinfo
+            }
         return self._serializer(self.instance, self.depth)

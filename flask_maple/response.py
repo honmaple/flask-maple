@@ -6,12 +6,12 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期一 2016-12-12 0:12:51 (CST)
+# Last Update:星期二 2017-1-24 15:3:3 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask import jsonify
-from flask_maple.babel import gettext as _
+from .babel import gettext as _
 
 
 class HTTPResponse(object):
@@ -21,7 +21,7 @@ class HTTPResponse(object):
     LOGIN_USERNAME_UNIQUE = '303'
     LOGIN_EMAIL_UNIQUE = '303'
     FORGET_EMAIL_NOT_REGISTER = '304'
-    USER_IS_CONFIRMED = '305',
+    USER_IS_CONFIRMED = '305'
     FORM_VALIDATE_ERROR = '305'
 
     FORBIDDEN = '403'
@@ -46,7 +46,7 @@ class HTTPResponse(object):
                  description='',
                  pageinfo=None):
         self.status = status
-        self.message = self.STATUS_DESCRIPTION.get(status)
+        self.message = message or self.STATUS_DESCRIPTION.get(status)
         self.data = data
         self.description = description
         self.pageinfo = pageinfo
@@ -59,7 +59,7 @@ class HTTPResponse(object):
             'description': self.description,
         }
         if self.pageinfo is not None:
-            response.update(pageinfo=self.pageinfo)
+            response.update(pageinfo=self.pageinfo.as_dict())
         return response
 
     def to_response(self):
