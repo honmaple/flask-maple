@@ -13,26 +13,19 @@ from threading import Thread
 from itsdangerous import (URLSafeTimedSerializer, BadSignature,
                           SignatureExpired)
 from flask import current_app
-from flask_maple.utils import gen_secret_key
+from .utils import gen_secret_key
 
 mail = Mail()
 
 
-class UserMailMixin(object):
+class MailMixin(object):
     def send_async_email(self, msg):
         # app = current_app._get_current_object()
         # with app.app_context():
         mail.send(msg)
 
-    def send_email(self,
-                   subject='',
-                   recipients=None,
-                   body=None,
-                   html=None,
-                   **kwargs):
-        if not isinstance(recipients, list):
-            recipients = [recipients]
-        msg = Message(subject=subject, recipients=recipients, html=html)
+    def send_email(self, **kwargs):
+        msg = Message(**kwargs)
         thr = Thread(target=self.send_async_email, args=[msg])
         thr.start()
 
@@ -41,8 +34,8 @@ class UserMailMixin(object):
         config = current_app.config
         secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
         salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
-        serializer = URLSafeTimedSerializer(secret_key)
-        token = serializer.dumps(self.email, salt=salt)
+        serializer = URLSafeTimedSerializer(secret_key, salt=salt)
+        token = serializer.dumps(self.email)
         return token
 
     @staticmethod
@@ -50,9 +43,9 @@ class UserMailMixin(object):
         config = current_app.config
         secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
         salt = config.setdefault('SECURITY_PASSWORD_SALT', gen_secret_key(24))
-        serializer = URLSafeTimedSerializer(secret_key)
+        serializer = URLSafeTimedSerializer(secret_key, salt=salt)
         try:
-            email = serializer.loads(token, salt=salt, max_age=max_age)
+            email = serializer.loads(token, max_age=max_age)
         except BadSignature:
             return False
         except SignatureExpired:

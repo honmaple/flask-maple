@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-02 15:52:51 (CST)
-# Last Update:星期五 2016-12-2 20:45:56 (CST)
+# Last Update:星期二 2017-3-14 21:24:29 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -23,7 +23,6 @@ class EditorMd(object):
             self.init_app(app)
 
     def init_app(self, app):
-        print(dir(app.extensions.keys()))
         self.filters(app)
 
     def filters(self, app):

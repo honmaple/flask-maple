@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期二 2017-1-24 15:3:3 (CST)
+# Last Update:星期二 2017-3-14 21:11:59 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -25,6 +25,8 @@ class HTTPResponse(object):
     FORM_VALIDATE_ERROR = '305'
 
     FORBIDDEN = '403'
+    HTTP_CODE_PARA_ERROR = '401'
+    HTTP_CODE_NOT_FOUNT = '404'
 
     STATUS_DESCRIPTION = {
         NORMAL_STATUS: 'normal',
@@ -36,15 +38,17 @@ class HTTPResponse(object):
         USER_IS_CONFIRMED:
         _('Your account has been confirmed,don\'t need again'),
         FORM_VALIDATE_ERROR: _('Form validate error'),
-        FORBIDDEN: _('You have no permission!')
+        FORBIDDEN: _('You have no permission!'),
+        HTTP_CODE_PARA_ERROR: 'params error',
+        HTTP_CODE_NOT_FOUNT: '404',
     }
 
     def __init__(self,
                  status='200',
                  message='',
-                 data=None,
+                 data='',
                  description='',
-                 pageinfo=None):
+                 pageinfo=''):
         self.status = status
         self.message = message or self.STATUS_DESCRIPTION.get(status)
         self.data = data

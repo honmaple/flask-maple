@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期日 2017-2-26 21:31:57 (CST)
+# Last Update:星期二 2017-3-14 21:18:28 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -224,9 +224,6 @@ class ModelMixin(object):
     @classmethod
     def get(cls, **filter_dict):
         instance = cls.query.filter_by(**filter_dict).first()
-        # if not instance:
-        #     setattr(cls, 'DoesNotExist', ObjectDoesNotExist)
-        #     raise cls.DoesNotExist(cls)
         return instance
 
     @classmethod
