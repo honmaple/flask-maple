@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title> {% block title %}{%- endblock -%}</title>
+        <title>{% block title %}{%- endblock -%}</title>
         {%- if use_auth -%}
         {% from 'maple/auth.html' import base as auth_base %}
         {{ auth_base() }}
@@ -18,27 +18,6 @@
         {%- assets "home_css" %}
         <link rel="stylesheet" href="{{ ASSET_URL }}" />
         {%- endassets %}
-        <style>
-         @font-face {
-             font-family: 'Glyphicons Halflings';
-             src: url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.eot')}}');
-             src: url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.eot?#iefix')}}') format('embedded-opentype'),
-             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.woff2')}}') format('woff2'),
-             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.woff')}}') format('woff'),
-             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.ttf')}}') format('truetype'),
-             url('{{ url_for('bootstrap.static',filename='fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular')}}') format('svg');
-         }
-         {%- if use_awesome %}
-         @font-face{
-             font-family:'FontAwesome';
-             src:url('/static/bootstrap/font-awesome/font/fontawesome-webfont.eot?v=3.2.1');
-             src:url('/static/bootstrap/font-awesome/font/fontawesome-webfont.eot?#iefix&v=3.2.1') format('embedded-opentype'),
-             url('/static/bootstrap/font-awesome/font/fontawesome-webfont.woff?v=3.2.1') format('woff'),
-             url('/static/bootstrap/font-awesome/font/fontawesome-webfont.ttf?v=3.2.1') format('truetype'),
-             url('/static/bootstrap/font-awesome/fontawesome-webfont.svg#fontawesomeregular?v=3.2.1') format('svg');
-         }
-         {% endif -%}
-        </style>
         {%- endblock %}
     </head>
     <body>

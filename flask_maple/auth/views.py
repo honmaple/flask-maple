@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期一 2016-12-12 0:55:25 (CST)
+# Last Update:星期五 2017-3-17 22:41:49 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -20,8 +20,7 @@ from random import sample
 from string import ascii_letters, digits
 from functools import wraps
 from flask_maple.response import HTTPResponse
-from flask_maple.forms import (LoginForm, RegisterForm, ForgetForm,
-                               return_errors)
+from .forms import (LoginForm, RegisterForm, ForgetForm, return_errors)
 
 
 def guest_permission(func):

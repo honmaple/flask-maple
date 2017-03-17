@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期二 2017-3-14 21:11:59 (CST)
+# Last Update:星期五 2017-3-17 22:43:42 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -62,7 +62,7 @@ class HTTPResponse(object):
             'data': self.data,
             'description': self.description,
         }
-        if self.pageinfo is not None:
+        if self.pageinfo:
             response.update(pageinfo=self.pageinfo.as_dict())
         return response
 
