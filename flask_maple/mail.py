@@ -20,16 +20,15 @@ mail = _Mail()
 
 class Mail(object):
     def __init__(self, app=None):
-        self.app = app
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app):
+        self.app = app
         mail.init_app(app)
 
     def send_async_email(self, msg):
-        # app = current_app._get_current_object()
-        with self.app:
+        with self.app.app_context():
             mail.send(msg)
 
     def send_email(self, **kwargs):
