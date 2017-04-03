@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期六 2016-12-10 14:26:32 (CST)
+# Last Update:星期四 2017-3-30 17:5:21 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,56 +14,19 @@ from flask_maple.models import db
 from flask_maple.permission.models import Group
 from datetime import datetime
 from werkzeug.security import (generate_password_hash, check_password_hash)
-from flask_maple.mail import UserMailMixin
+from flask_maple.mail import MailMixin
 from flask_maple.models import ModelMixin
 
-group_user = db.Table(
-    'group_user',
+user_group = db.Table(
+    'user_group',
     db.Column('group_id', db.Integer, db.ForeignKey('groups.id')),
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')))
 
 
-class UserMixin(object):
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        try:
-            return str(self.id)
-        except AttributeError:
-            raise NotImplementedError('No `id` attribute - override `get_id`')
-
-    def __eq__(self, other):
-        '''
-        Checks the equality of two `UserMixin` objects using `get_id`.
-        '''
-        if isinstance(other, UserMixin):
-            return self.get_id() == other.get_id()
-        return NotImplemented
-
-    def __ne__(self, other):
-        '''
-        Checks the inequality of two `UserMixin` objects using `get_id`.
-        '''
-        equal = self.__eq__(other)
-        if equal is NotImplemented:
-            return NotImplemented
-        return not equal
-
-
-class User(db.Model, UserMailMixin, ModelMixin):
+class User(db.Model, MailMixin, ModelMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(49), unique=True)
+    username = db.Column(db.String(81), unique=True)
     email = db.Column(db.String(81), unique=True)
     password = db.Column(db.String(81), nullable=False)
     is_superuser = db.Column(db.Boolean, default=False)
@@ -72,10 +35,10 @@ class User(db.Model, UserMailMixin, ModelMixin):
     last_login = db.Column(db.DateTime, nullable=True)
     groups = db.relationship(
         Group,
-        secondary=group_user,
-        lazy='joined',
+        secondary=user_group,
+        lazy='dynamic',
         backref=db.backref(
-            'users', lazy='joined'))
+            'users', lazy='dynamic'))
 
     def __str__(self):
         return self.username
@@ -88,21 +51,3 @@ class User(db.Model, UserMailMixin, ModelMixin):
 
     def check_password(self, raw_password):
         return check_password_hash(self.password, raw_password)
-
-    def update_password(self, password):
-        self.set_password(password)
-        db.session.commit()
-
-
-class AnonymousUser(object):
-    id = None
-    pk = None
-    username = 'anonymous'
-    is_active = False
-    is_superuser = False
-
-    def __str__(self):
-        return self.username
-
-    def __repr__(self):
-        return '<AnonymousUser>'

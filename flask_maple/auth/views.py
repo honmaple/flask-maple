@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期五 2017-3-17 22:41:49 (CST)
+# Last Update:星期三 2017-3-22 15:5:6 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -51,16 +51,15 @@ class LoginBaseView(MethodView):
             password = form.password.data
             remember = request.get_json()['remember']
             user = self.user_model.query.filter_by(username=username).first()
-            if user is not None and user.check_password(password):
+            if user and user.check_password(password):
                 if remember:
                     login_user(user, remember=True)
                 else:
                     login_user(user)
                 self.principal(user)
                 return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
-            else:
-                return HTTPResponse(
-                    HTTPResponse.LOGIN_USER_OR_PASSWORD_ERROR).to_response()
+            return HTTPResponse(
+                HTTPResponse.LOGIN_USER_OR_PASSWORD_ERROR).to_response()
         else:
             if form.errors:
                 return return_errors(form)
@@ -119,7 +118,7 @@ class RegisterBaseView(MethodView):
                 user = self.register_models(form)
                 login_user(user)
                 self.principal(user)
-                self.register_email(user.email)
+                self.register_email(user)
                 flash(_('An email has been sent to your.Please receive'))
                 return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
         else:
@@ -138,16 +137,16 @@ class RegisterBaseView(MethodView):
         user.username = form.username.data
         user.password = form.password.data
         user.email = form.email.data
-        user.add()
+        user.save()
         return user
 
-    def register_email(self, email):
-        token = self.mail.custom_email_token(email)
+    def register_email(self, user):
+        token = user.email_token
         confirm_url = url_for(
             'auth.confirm_token', token=token, _external=True)
         html = render_template('templet/email.html', confirm_url=confirm_url)
         subject = _("Please confirm  your email")
-        self.mail.custom_email_send(email, html, subject)
+        user.send_email(html=html, subject=subject)
 
 
 class ForgetBaseView(MethodView):
@@ -169,7 +168,7 @@ class ForgetBaseView(MethodView):
                 password = ''.join(sample(ascii_letters + digits, 8))
                 user.password = password
                 user.save()
-                self.forget_email(user.email, password)
+                self.forget_email(user, password)
                 flash(
                     _('An email has been sent to you.'
                       'Please receive and update your password in time'))
@@ -182,10 +181,10 @@ class ForgetBaseView(MethodView):
                 return return_errors(form)
             return render_template('auth/forget.html', form=form)
 
-    def forget_email(self, email, password):
+    def forget_email(self, user, password):
         html = render_template('templet/forget.html', confirm_url=password)
         subject = "Please update your password in time"
-        self.mail.custom_email_send(email, html, subject)
+        user.send_email(html=html, subject=subject)
 
 
 class ConfirmBaseView(MethodView):
@@ -195,7 +194,7 @@ class ConfirmBaseView(MethodView):
     def post(self):
         if current_user.is_confirmed:
             return HTTPResponse(HTTPResponse.USER_IS_CONFIRMED).to_response()
-        self.register_email(current_user.email)
+        self.register_email(current_user)
         self.email_models()
         return HTTPResponse(
             HTTPResponse.NORMAL_STATUS,
@@ -206,13 +205,13 @@ class ConfirmBaseView(MethodView):
         current_user.send_email_time = datetime.now()
         current_user.save()
 
-    def register_email(self, email):
-        token = self.mail.custom_email_token(email)
+    def register_email(self, user):
+        token = user.email_token
         confirm_url = url_for(
             'auth.confirm_token', token=token, _external=True)
         html = render_template('templet/email.html', confirm_url=confirm_url)
         subject = _("Please confirm  your email")
-        self.mail.custom_email_send(email, html, subject)
+        user.send_email(html=html, subject=subject)
 
 
 class ConfirmTokenBaseView(MethodView):
@@ -220,13 +219,12 @@ class ConfirmTokenBaseView(MethodView):
     mail = None
 
     def get(self, token):
-        email = self.mail.custom_confirm_token(token)
-        if not email:
+        user = self.user_model.check_email_token(token)
+        if not user:
             msg = _('The confirm link has been out of time.'
                     'Please confirm your email again')
             flash(msg)
             return redirect('/')
-        user = self.user_model.query.filter_by(email=email).first()
         if user.is_confirmed:
             flash(_('The email has been confirmed. Please login.'))
             return redirect('auth.login')

@@ -31,8 +31,8 @@ class Mail(object):
         with self.app.app_context():
             mail.send(msg)
 
-    def send_email(self, **kwargs):
-        msg = Message(**kwargs)
+    def send_email(self, *args, **kwargs):
+        msg = Message(*args, **kwargs)
         thr = Thread(target=self.send_async_email, args=[msg])
         thr.start()
 
@@ -47,8 +47,8 @@ class MailMixin(object):
         token = serializer.dumps(self.email)
         return token
 
-    @staticmethod
-    def check_email_token(token, max_age=259200):
+    @classmethod
+    def check_email_token(cls, token, max_age=259200):
         config = current_app.config
         secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
         salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
@@ -59,4 +59,11 @@ class MailMixin(object):
             return False
         except SignatureExpired:
             return False
-        return email
+        user = cls.query.filter_by(email=email).first()
+        if user is None:
+            return False
+        return user
+
+    # def send_email(self, *args, **kwargs):
+    #     kwargs.update(recipients=[self.email])
+    #     mail.send_email(*args, **kwargs)

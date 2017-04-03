@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-25 16:44:19 (CST)
-# Last Update:星期六 2016-11-26 16:36:9 (CST)
+# Last Update:星期五 2017-3-31 20:53:10 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -65,29 +65,7 @@ class Permission(db.Model, ModelMixin):
         return False
 
 
-# class Callback(db.Model, ModelMixin):
-#     __tablename__ = 'callbacks'
-
-#     CALLBACK_TYPE_HTTP = '0'
-#     CALLBACK_TYPE_JSON = '1'
-#     CALLBACK_TYPE_REDIRECT = '2'
-
-#     CALLBACK_TYPE = (('0', '403 Forbidden'), ('1', 'Json'), ('2', 'Redirect'))
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     callback = db.Column(db.String(512), nullable=False, unique=True)
-#     callback_type = db.Column(
-#         db.String(10), nullable=False, default=CALLBACK_TYPE_HTTP)
-#     description = db.Column(db.String(128), nullable=True)
-
-#     def __str__(self):
-#         return self.callback
-
-#     def __repr__(self):
-#         return "<Callback %r>" % self.callback
-
-
-class Group(db.Model, ModelMixin):
+class Group(db.Model):
     __tablename__ = 'groups'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(512), nullable=False, unique=True)
@@ -159,7 +137,8 @@ class Router(db.Model, ModelMixin):
         return self.permissions.all()
 
     def get_allow_permissions(self):
-        return self.permissions.filter_by(allow=Permission.PERMISSION_ALLOW).all()
+        return self.permissions.filter_by(
+            allow=Permission.PERMISSION_ALLOW).all()
 
     def get_deny_permissions(self):
         return self.permissions.filter_by(allow=Permission.PERMISSION_DENY)
