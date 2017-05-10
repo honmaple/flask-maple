@@ -6,22 +6,21 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 22:19:36 (CST)
-# Last Update:星期六 2016-11-26 18:52:54 (CST)
+# Last Update:星期三 2017-5-10 16:30:24 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
 from setuptools import setup
 
-
 setup(
     name='Flask-Maple',
-    version='0.4.6',
+    version='0.4.7',
     url='https://github.com/honmaple/flask-maple',
     license='BSD',
     author='honmaple',
     author_email='xiyang0807@gmail.com',
-    description='captcha ,bootstrap,easy login and for flask',
-    long_description='easy to use captcha ,bootstrap and login for flask.Please visit https://github.com/honmaple/flask-maple',
+    description='captcha ,bootstrap,easy login and more flask tips.',
+    long_description='easy to use captcha ,bootstrap and login and more flask tips.Please visit https://github.com/honmaple/flask-maple',
     packages=['flask_maple'],
     zip_safe=False,
     include_package_data=True,
@@ -33,12 +32,9 @@ setup(
         'Flask-Babelex',
     ],
     classifiers=[
-        'Environment :: Web Environment',
-        'Intended Audience :: Developers',
+        'Environment :: Web Environment', 'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        'Operating System :: OS Independent', 'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
-)
+    ])

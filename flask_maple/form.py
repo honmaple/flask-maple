@@ -6,25 +6,13 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-03-17 22:37:34 (CST)
-# Last Update:星期五 2017-3-17 22:38:33 (CST)
+# Last Update:星期三 2017-5-10 16:28:25 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask import flash, session, request
-from wtforms import (StringField, PasswordField, BooleanField)
-from wtforms.validators import Length, DataRequired, Email
-from flask_maple.babel import lazy_gettext as _
+from flask import flash
 from flask_maple.response import HTTPResponse
 from functools import wraps
-
-try:
-    from flask_wtf import FlaskForm as Form
-except ImportError:
-    from flask_wtf import Form
-
-from babel.support import Translations
-
-translations = Translations()
 
 
 def form_validate(form_class, success=None, error=None, f=None):

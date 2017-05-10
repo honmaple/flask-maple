@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期三 2017-5-10 16:4:48 (CST)
+# Last Update:星期三 2017-5-10 16:29:13 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -21,9 +21,10 @@ from flask_login import current_user, login_required, login_user, logout_user
 from flask_principal import AnonymousIdentity, Identity, identity_changed
 
 from flask_maple.babel import gettext as _
+from flask_maple.form import return_errors
 from flask_maple.response import HTTPResponse
 
-from .forms import ForgetForm, LoginForm, RegisterForm, return_errors
+from .forms import ForgetForm, LoginForm, RegisterForm
 from .models import User
 
 
