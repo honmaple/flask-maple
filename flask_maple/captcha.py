@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-16 22:17:32 (CST)
-# Last Update:星期六 2016-11-5 12:44:17 (CST)
+# Last Update:星期三 2017-5-10 15:25:21 (CST)
 #          By: jianglin
 # Description: use pillow generate captcha
 # **************************************************************************
@@ -26,9 +26,17 @@ class Captcha(object):
     def init_app(self, app):
         self.app = app
         captcha = app.config.get('CAPTCHA_URL', 'captcha')
-        app.add_url_rule('/' + captcha, 'captcha', self.validate)
+        app.add_url_rule('/' + captcha, 'captcha', self._response)
 
-    def validate(self):
+    def validate(self, raw_captcha):
+        captcha = session['captcha']
+        if not captcha:
+            return False
+        if captcha.lower() != raw_captcha.lower():
+            return True
+        return False
+
+    def _response(self):
         t = GenCaptcha()
         buf = t.start(font_type=self.font)
         buf_value = buf.getvalue()

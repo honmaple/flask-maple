@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update:星期五 2017-3-17 22:43:42 (CST)
+# Last Update:星期三 2017-5-10 16:4:46 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -30,11 +30,7 @@ class HTTPResponse(object):
 
     STATUS_DESCRIPTION = {
         NORMAL_STATUS: 'normal',
-        LOGIN_USER_OR_PASSWORD_ERROR: _('Username or Password Error'),
         LOGIN_CAPTCHA_ERROR: _('Captcha Error'),
-        LOGIN_EMAIL_UNIQUE: _('The email has been registered'),
-        LOGIN_USERNAME_UNIQUE: _('The username has been registered'),
-        FORGET_EMAIL_NOT_REGISTER: _('The email is error'),
         USER_IS_CONFIRMED:
         _('Your account has been confirmed,don\'t need again'),
         FORM_VALIDATE_ERROR: _('Form validate error'),

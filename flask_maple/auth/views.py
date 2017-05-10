@@ -6,21 +6,31 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期三 2017-3-22 15:5:6 (CST)
+# Last Update:星期三 2017-5-10 16:4:48 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask import (request, session, flash, render_template, url_for, redirect,
-                   current_app)
-from flask.views import MethodView
-from flask_maple.babel import gettext as _
-from flask_login import login_user, logout_user, current_user, login_required
-from datetime import datetime
+from functools import wraps
 from random import sample
 from string import ascii_letters, digits
-from functools import wraps
+
+from flask import (current_app, flash, redirect, render_template, request,
+                   session, url_for)
+from flask.views import MethodView
+from flask_login import current_user, login_required, login_user, logout_user
+from flask_principal import AnonymousIdentity, Identity, identity_changed
+
+from flask_maple.babel import gettext as _
 from flask_maple.response import HTTPResponse
-from .forms import (LoginForm, RegisterForm, ForgetForm, return_errors)
+
+from .forms import ForgetForm, LoginForm, RegisterForm, return_errors
+from .models import User
+
+
+def login(user, remember):
+    login_user(user, remember=remember)
+    identity_changed.send(
+        current_app._get_current_object(), identity=Identity(user.id))
 
 
 def guest_permission(func):
@@ -34,112 +44,78 @@ def guest_permission(func):
     return decorator
 
 
-class LoginBaseView(MethodView):
+class LoginView(MethodView):
     decorators = [guest_permission]
-    form = LoginForm
-    user_model = None
-    use_principal = False
 
     def get(self):
-        data = {'form': self.form()}
+        data = {'form': LoginForm()}
         return render_template('auth/login.html', **data)
 
     def post(self):
-        form = self.form()
+        form = LoginForm()
         if form.validate_on_submit():
             username = form.username.data
             password = form.password.data
-            remember = request.get_json()['remember']
-            user = self.user_model.query.filter_by(username=username).first()
+            remember = True if request.json.get('remember') else False
+            user = User.query.filter_by(username=username).first()
             if user and user.check_password(password):
-                if remember:
-                    login_user(user, remember=True)
-                else:
-                    login_user(user)
-                self.principal(user)
+                login(user, remember)
                 return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
+            msg = _('Username or Password Error')
             return HTTPResponse(
-                HTTPResponse.LOGIN_USER_OR_PASSWORD_ERROR).to_response()
+                HTTPResponse.HTTP_CODE_PARA_ERROR, message=msg).to_response()
         else:
             if form.errors:
                 return return_errors(form)
-        return render_template('auth/login.html', form=form)
-
-    def principal(self, user):
-        if self.use_principal:
-            from flask_principal import Identity, identity_changed
-            identity_changed.send(
-                current_app._get_current_object(), identity=Identity(user.id))
+            return render_template('auth/login.html', form=form)
 
 
-class LogoutBaseView(MethodView):
+class LogoutView(MethodView):
     decorators = [login_required]
-    use_principal = False
 
     def get(self):
         logout_user()
-        self.principal()
+        for key in ('identity.id', 'identity.auth_type'):
+            session.pop(key, None)
+        identity_changed.send(
+            current_app._get_current_object(), identity=AnonymousIdentity())
         return redirect(request.args.get('next') or '/')
 
-    def principal(self):
-        if self.use_principal:
-            from flask_principal import (AnonymousIdentity, identity_changed)
-            for key in ('identity.id', 'identity.auth_type'):
-                session.pop(key, None)
-            identity_changed.send(
-                current_app._get_current_object(),
-                identity=AnonymousIdentity())
 
-
-class RegisterBaseView(MethodView):
-    form = RegisterForm
-    user_model = None
-    use_principal = False
-    mail = None
-
+class RegisterView(MethodView):
     def get(self):
-        data = {'form': self.form()}
+        form = RegisterForm()
+        data = {'form': form}
         return render_template('auth/register.html', **data)
 
     def post(self):
-        form = self.form()
+        form = RegisterForm()
         if form.validate_on_submit():
-            useremail = self.user_model.query.filter_by(
-                email=form.email.data).first()
-            username = self.user_model.query.filter_by(
-                username=form.username.data).first()
-            if username is not None:
+            email = form.email.data
+            username = form.username.data
+            password = form.password.data
+            if User.query.filter_by(email=email).exists():
+                msg = _('The email has been registered')
                 return HTTPResponse(
-                    HTTPResponse.LOGIN_USERNAME_UNIQUE).to_response()
-            elif useremail is not None:
+                    HTTPResponse.HTTP_CODE_PARA_ERROR,
+                    message=msg).to_response()
+            if User.query.filter_by(username=username).exists():
+                msg = _('The username has been registered')
                 return HTTPResponse(
-                    HTTPResponse.LOGIN_EMAIL_UNIQUE).to_response()
-            else:
-                user = self.register_models(form)
-                login_user(user)
-                self.principal(user)
-                self.register_email(user)
-                flash(_('An email has been sent to your.Please receive'))
-                return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
+                    HTTPResponse.HTTP_CODE_PARA_ERROR,
+                    message=msg).to_response()
+            user = User(username=username, email=email)
+            user.set_password(password)
+            user.save()
+            login(user, True)
+            self.register_email(user)
+            flash(_('An email has been sent to your.Please receive'))
+            return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
         else:
             if form.errors:
                 return return_errors(form)
             return render_template('auth/register.html', form=form)
 
-    def principal(self, user):
-        if self.use_principal:
-            from flask_principal import Identity, identity_changed
-            identity_changed.send(
-                current_app._get_current_object(), identity=Identity(user.id))
-
-    def register_model(self, form):
-        user = self.user_model()
-        user.username = form.username.data
-        user.password = form.password.data
-        user.email = form.email.data
-        user.save()
-        return user
-
     def register_email(self, user):
         token = user.email_token
         confirm_url = url_for(
@@ -149,63 +125,56 @@ class RegisterBaseView(MethodView):
         user.send_email(html=html, subject=subject)
 
 
-class ForgetBaseView(MethodView):
+class ForgetView(MethodView):
     decorators = [guest_permission]
-    form = ForgetForm
-    user_model = None
-    mail = None
 
     def get(self):
-        data = {'form': self.form()}
+        form = ForgetForm()
+        data = {'form': form}
         return render_template('auth/forget.html', **data)
 
     def post(self):
-        form = self.form()
+        form = ForgetForm()
         if form.validate_on_submit():
             email = form.email.data
-            user = self.user_model.query.filter_by(email=email).first()
-            if user is not None:
-                password = ''.join(sample(ascii_letters + digits, 8))
-                user.password = password
-                user.save()
-                self.forget_email(user, password)
-                flash(
-                    _('An email has been sent to you.'
-                      'Please receive and update your password in time'))
-                return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
-            else:
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                msg = _('The email is error')
                 return HTTPResponse(
-                    HTTPResponse.FORGET_EMAIL_NOT_REGISTER).to_response()
+                    HTTPResponse.HTTP_CODE_PARA_ERROR,
+                    message=msg).to_response()
+            password = ''.join(sample(ascii_letters + digits, 8))
+            user.set_password(password)
+            user.save()
+            self.send_email(user, password)
+            flash(
+                _('An email has been sent to you.'
+                  'Please receive and update your password in time'))
+            return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
         else:
             if form.errors:
                 return return_errors(form)
             return render_template('auth/forget.html', form=form)
 
-    def forget_email(self, user, password):
+    def send_email(self, user, password):
         html = render_template('templet/forget.html', confirm_url=password)
         subject = "Please update your password in time"
         user.send_email(html=html, subject=subject)
 
 
-class ConfirmBaseView(MethodView):
+class ConfirmView(MethodView):
     decorators = [login_required]
-    mail = None
 
     def post(self):
         if current_user.is_confirmed:
             return HTTPResponse(HTTPResponse.USER_IS_CONFIRMED).to_response()
-        self.register_email(current_user)
-        self.email_models()
+        self.send_email(current_user)
         return HTTPResponse(
             HTTPResponse.NORMAL_STATUS,
             description=_(
                 'An email has been sent to your.Please receive')).to_response()
 
-    def email_models(self):
-        current_user.send_email_time = datetime.now()
-        current_user.save()
-
-    def register_email(self, user):
+    def send_email(self, user):
         token = user.email_token
         confirm_url = url_for(
             'auth.confirm_token', token=token, _external=True)
@@ -214,12 +183,9 @@ class ConfirmBaseView(MethodView):
         user.send_email(html=html, subject=subject)
 
 
-class ConfirmTokenBaseView(MethodView):
-    user_model = None
-    mail = None
-
+class ConfirmTokenView(MethodView):
     def get(self, token):
-        user = self.user_model.check_email_token(token)
+        user = User.check_email_token(token)
         if not user:
             msg = _('The confirm link has been out of time.'
                     'Please confirm your email again')
@@ -228,81 +194,28 @@ class ConfirmTokenBaseView(MethodView):
         if user.is_confirmed:
             flash(_('The email has been confirmed. Please login.'))
             return redirect('auth.login')
-        self.confirm_models(user)
+        user.is_confirmed = True
+        user.save()
         flash('You have confirmed your account. Thanks!')
         return redirect('/')
 
-    def confirm_models(self, user):
-        user.is_confirmed = True
-        user.confirmed_time = datetime.now()
-        user.save()
-
 
 class Auth(object):
-    def __init__(self,
-                 app=None,
-                 mail=None,
-                 user_model=None,
-                 use_principal=False):
+    def __init__(self, app=None):
         self.app = app
-        self.mail = mail
-        self.use_principal = use_principal
-        self.user_model = user_model
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app):
-        login_view = self.login_view().as_view('auth.login')
-        logout_view = self.logout_view().as_view('auth.logout')
-        register_view = self.register_view().as_view('auth.register')
-        forget_view = self.forget_view().as_view('auth.forget')
-        confirm_view = self.confirm_view().as_view('auth.confirm')
-        confirm_token_view = self.confirm_token_view().as_view(
-            'auth.confirm_token')
+        login_view = LoginView.as_view('auth.login')
+        logout_view = LogoutView.as_view('auth.logout')
+        register_view = RegisterView.as_view('auth.register')
+        forget_view = ForgetView.as_view('auth.forget')
+        confirm_view = ConfirmView.as_view('auth.confirm')
+        confirm_token_view = ConfirmTokenView.as_view('auth.confirm_token')
         app.add_url_rule('/login', view_func=login_view)
         app.add_url_rule('/logout', view_func=logout_view)
         app.add_url_rule('/register', view_func=register_view)
         app.add_url_rule('/forget', view_func=forget_view)
         app.add_url_rule('/confirm', view_func=confirm_view)
         app.add_url_rule('/confirm/<token>', view_func=confirm_token_view)
-
-    def login_view(self):
-        class LoginView(LoginBaseView):
-            user_model = self.user_model
-            use_principal = True
-
-        return LoginView
-
-    def logout_view(self):
-        class LogoutView(LogoutBaseView):
-            use_principal = True
-
-        return LogoutView
-
-    def register_view(self):
-        class RegisterView(RegisterBaseView):
-            user_model = self.user_model
-            mail = self.mail
-            use_principal = True
-
-        return RegisterView
-
-    def forget_view(self):
-        class ForgetView(ForgetBaseView):
-            mail = self.mail
-            user_model = self.user_model
-
-        return ForgetView
-
-    def confirm_view(self):
-        class ConfirmView(ConfirmBaseView):
-            mail = self.mail
-
-        return ConfirmView
-
-    def confirm_token_view(self):
-        class ConfirmTokenView(ConfirmTokenBaseView):
-            user_model = self.user_model
-            mail = self.mail
-
-        return ConfirmTokenView

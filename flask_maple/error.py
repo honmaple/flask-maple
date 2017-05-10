@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-05-18 16:34:19 (CST)
-# Last Update:星期四 2016-12-29 20:43:55 (CST)
+# Last Update:星期三 2017-5-10 14:30:7 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -20,11 +20,6 @@ class Error(object):
             self.init_app(app)
 
     def init_app(self, app):
-        # try:
-        #     app.error_handler_spec[None][403] = self.forbidden
-        #     app.error_handler_spec[None][404] = self.not_found
-        #     app.error_handler_spec[None][500] = self.error
-        # except AttributeError:
         app.register_error_handler(403, self.forbidden)
         app.register_error_handler(404, self.not_found)
         app.register_error_handler(500, self.error)
@@ -34,7 +29,7 @@ class Error(object):
         return render_template('templet/error_403.html'), 403
 
     def not_found(self, error):
-        current_app.logger.info(error)
+        current_app.logger.warning(error)
         return render_template('templet/error_404.html'), 404
 
     def error(self, error):

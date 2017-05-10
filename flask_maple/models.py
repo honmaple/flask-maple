@@ -6,13 +6,13 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期二 2017-3-14 21:18:28 (CST)
+# Last Update:星期三 2017-5-10 14:32:59 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy import BaseQuery, Model
-from sqlalchemy.orm.exc import NoResultFound,MultipleResultsFound
+from flask_sqlalchemy import BaseQuery
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import joinedload, joinedload_all, load_only
 from sqlalchemy.orm.base import _entity_descriptor

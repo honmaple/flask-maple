@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期二 2017-3-14 21:9:29 (CST)
+# Last Update:星期三 2017-5-10 16:24:6 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -72,10 +72,6 @@ class Serializer(object):
             self.exclude = meta.exclude
         if not self.extra and hasattr(meta, 'extra'):
             self.extra = meta.extra
-        # if not self.depth:
-        #     self.depth = meta.depth if hasattr(meta, 'depth') else 2
-        # if self.include and self.exclude:
-        #     raise ValueError('include and exclude can\'t work together')
         if self.many:
             return self._serializerlist(self.instance, self.depth)
         return self._serializer(self.instance, self.depth)

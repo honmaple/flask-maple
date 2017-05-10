@@ -1,126 +1,126 @@
 {%- macro base() -%}
-<script type="text/javascript" charset="utf-8">
- var g = {
-     csrftoken: "{{ csrf_token() }}"
- };
- var url = {
-     index: "{{ request.args.get('next') or '/' }}",
-     login: "{{ url_for('auth.login') }}",
-     forget: "{{ url_for('auth.forget')}}",
-     register: "{{ url_for('auth.register') }}",
-     captcha: "{{ url_for('captcha')}}"
- };
-</script>
+  <script type="text/javascript" charset="utf-8">
+   var g = {
+       csrftoken: "{{ csrf_token() }}"
+   };
+   var url = {
+       index: "{{ request.args.get('next') or '/' }}",
+       login: "{{ url_for('auth.login') }}",
+       forget: "{{ url_for('auth.forget')}}",
+       register: "{{ url_for('auth.register') }}",
+       captcha: "{{ url_for('captcha')}}"
+   };
+  </script>
 {%- endmacro %}
 
 {% macro error() -%}
-{% if use_auth %}
-<div class="alert alert-info" id="showerror" style="padding:8px;">
-    <button type="button" class="close" id="hide">
+  {% if use_auth %}
+    <div class="alert alert-info" id="showerror" style="padding:8px;">
+      <button type="button" class="close" id="hide">
         <span aria-hidden="true">&times;</span>
-    </button>
-    <ul>
+      </button>
+      <ul>
         <li id="error"></li>
-    </ul>
-</div>
-{% endif %}
+      </ul>
+    </div>
+  {% endif %}
 {%- endmacro %}
 
 {% macro forget(form) -%}
-<table align="center" style="font-size:14px;">
-    <tr>
-        <td colspan="2">
-            {{ error() }}
-        </td>
-    </tr>
-    <tr>
-        <td style="padding-right:5px;">{{ form.email.label }} </td>
-        <td style="padding-bottom:10px;"> {{ form.email(class="form-control",placeholder="Email",style="width:240px;") }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.captcha.label }}</td>
-        <td colspan="2" style="padding-bottom:10px;">
-            {% include 'maple/captcha.html' %}
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td style="padding-bottom:10px;">
-            <button type="button" class="btn btn-primary" id="forget">{{_('confirm')}}</button>
-        </td>
-    </tr>
-</table>
+
+  <form class="form-horizontal" style="max-width:420px;margin:auto">
+    {{ error() }}
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.email.label }}</label>
+      <div class="col-sm-9">
+        {{ form.email(class="form-control",placeholder="Email") }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.captcha.label }}</label>
+      <div class="col-sm-9">
+        {% include 'maple/captcha.html' %}
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="button" class="btn btn-primary btn-block" id="forget">{{_('confirm')}}</button>
+      </div>
+    </div>
+  </form>
 {%- endmacro %}
 
 {% macro login(form) -%}
-<table align="center" style="font-size:14px;">
-    <tr>
-        <td colspan="2">
-            {{ error() }}
-        </td>
-    </tr>
-    <tr>
-        <td>{{ form.username.label }}</td>
-        <td style="padding-bottom:10px;"> {{ form.username(class="form-control",placeholder="Username",style="width:240px") }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.password.label }}</td>
-        <td style="padding-bottom:10px;">{{ form.password(class="form-control",placeholder="Password",style="width:240px") }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.captcha.label }}</td>
-        <td colspan="2" style="padding-bottom:10px;">
-            {% include 'maple/captcha.html' %}
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td style="padding-bottom:10px;">
-            <button type="button" class="btn btn-primary" id="login">{{_('login')}}</button>
-            <a href="{{ url_for('auth.forget') }}">{{_('forget password?')}}</a>
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td>{{ form.remember() }} {{ form.remember.label}}</td>
-    </tr>
-    <tr>
-        <td></td>
-        <td><a href="{{ url_for('auth.register') }}">{{ _('not register')}}</a></td>
-    </tr>
-</table>
+  <form class="form-horizontal" style="max-width:420px;margin:auto">
+    {{ error() }}
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.username.label }}</label>
+      <div class="col-sm-9">
+        {{ form.username(class="form-control",placeholder="Username") }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.password.label }}</label>
+      <div class="col-sm-9">
+        {{ form.password(class="form-control",placeholder="Password") }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.captcha.label }}</label>
+      <div class="col-sm-9">
+        {% include 'maple/captcha.html' %}
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        {{ form.remember() }}{{ form.remember.label }}
+        <a class="pull-right" href="{{ url_for('auth.forget') }}">{{_('forget password?')}}</a>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="button" class="btn btn-primary btn-block" id="login">{{_('login')}}</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <a href="{{ url_for('auth.register') }}">{{ _('not register')}}</a>
+      </div>
+    </div>
+  </form>
 {%- endmacro %}
 
 {% macro register(form) -%}
-<table align="center" style="font-size:14px;">
-    <tr>
-        <td colspan="2">
-            {{ error() }}
-        </td>
-    </tr>
-    <tr>
-        <td>{{ form.username.label }}</td>
-        <td style="padding-bottom:10px;"> {{ form.username(class="form-control",placeholder="Username",style="width:240px") }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.email.label }}</td>
-        <td style="padding-bottom:10px;"> {{ form.email(class="form-control",placeholder="Email",style="width:240px") }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.password.label }}</td>
-        <td style="padding-bottom:10px;">{{ form.password(class="form-control",placeholder="Password",style="width:240px") }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.captcha.label }}</td>
-        <td colspan="2" style="padding-bottom:10px;">
-            {% include 'maple/captcha.html' %}
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td style="padding-bottom:10px;">
-            <button type="button" class="btn btn-primary" id="register">{{_('register')}}</button>
-        </td>
-    </tr>
-</table>
+  <form class="form-horizontal" style="max-width:420px;margin:auto">
+    {{ error() }}
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.username.label }}</label>
+      <div class="col-sm-9">
+        {{ form.username(class="form-control",placeholder="Username") }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.email.label }}</label>
+      <div class="col-sm-9">
+        {{ form.email(class="form-control",placeholder="Email") }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.password.label }}</label>
+      <div class="col-sm-9">
+        {{ form.password(class="form-control",placeholder="Password") }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">{{ form.captcha.label }}</label>
+      <div class="col-sm-9">
+        {% include 'maple/captcha.html' %}
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <button type="button" class="btn btn-primary btn-block" id="register">{{_('register')}}</button>
+      </div>
+    </div>
+  </form>
 {%- endmacro %}
