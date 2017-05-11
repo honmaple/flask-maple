@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期三 2017-5-10 16:29:13 (CST)
+# Last Update:星期四 2017-5-11 12:17:45 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -18,14 +18,15 @@ from flask import (current_app, flash, redirect, render_template, request,
                    session, url_for)
 from flask.views import MethodView
 from flask_login import current_user, login_required, login_user, logout_user
-from flask_principal import AnonymousIdentity, Identity, identity_changed
-
 from flask_maple.babel import gettext as _
 from flask_maple.form import return_errors
+from flask_maple.models import db
 from flask_maple.response import HTTPResponse
+from flask_principal import AnonymousIdentity, Identity, identity_changed
 
 from .forms import ForgetForm, LoginForm, RegisterForm
-from .models import User
+
+User = db.Model._decl_class_registry['User']
 
 
 def login(user, remember):
