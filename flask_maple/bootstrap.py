@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期二 2017-3-28 17:30:10 (CST)
+# Last Update:星期六 2017-8-26 9:12:5 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************
@@ -15,10 +15,11 @@ from flask_assets import Environment, Bundle
 
 
 class Bootstrap(object):
-    def __init__(self, app=None, js=None, css=None, use_auth=False):
+    def __init__(self, app=None, js=None, css=None, use_auth=False, cdn=True):
         self.js = js
         self.css = css
         self.use_auth = use_auth
+        self.cdn = cdn
         self.app = app
         if app is not None:
             self.init_app(app)
@@ -41,24 +42,25 @@ class Bootstrap(object):
     def assets(self, app):
         bundles = {
             'home_js': Bundle(
-                'bootstrap/js/jquery.min.js',
-                'bootstrap/bootstrap/js/bootstrap.min.js',
-                output='assets/home.js',
-                filters='jsmin'),
+                output='assets/home.js', filters='jsmin'),
             'home_css': Bundle(
-                'bootstrap/bootstrap/css/bootstrap.min.css',
                 'bootstrap/css/honmaple.css',
                 output='assets/home.css',
                 filters='cssmin')
         }
+        if not self.cdn:
+            bundles['home_js'].contents += (
+                'bootstrap/js/jquery.min.js',
+                'bootstrap/bootstrap/js/bootstrap.min.js')
+            bundles['home_css'].contents += (
+                'bootstrap/bootstrap/css/bootstrap.min.css')
         if self.use_auth:
             auth_js = ('bootstrap/js/honmaple.js', 'bootstrap/js/login.js')
-            bundles['home_js'].contents = bundles['home_js'].contents + auth_js
+            bundles['home_js'].contents += auth_js
         if self.css:
-            bundles['home_css'].contents = bundles[
-                'home_css'].contents + self.css
+            bundles['home_css'].contents += self.css
         if self.js:
-            bundles['home_js'].contents = bundles['home_js'].contents + self.js
+            bundles['home_js'].contents += self.js
 
         assets = Environment(app)
         assets.register(bundles)
@@ -71,3 +73,4 @@ class Bootstrap(object):
 
         app.jinja_env.globals['show_footer'] = show_footer
         app.jinja_env.globals['use_auth'] = self.use_auth
+        app.jinja_env.globals['cdn'] = self.cdn
