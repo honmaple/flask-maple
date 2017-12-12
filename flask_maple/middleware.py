@@ -6,11 +6,20 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-12 11:56:09 (CST)
-# Last Update:星期五 2017-3-17 22:45:43 (CST)
+# Last Update:星期二 2017-12-12 15:22:55 (CST)
 #          By:
 # Description:
 # **************************************************************************
+from flask import request
 from werkzeug import import_string
+import cProfile
+import pstats
+import sys
+
+if sys.version_info[0] < 3:
+    import StringIO
+else:
+    from io import StringIO
 
 
 class Middleware(object):
@@ -33,3 +42,20 @@ class Middleware(object):
             if hasattr(response, 'process_response'):
                 after_request = response.process_response
                 app.after_request(after_request)
+
+
+class ProfileMiddleware(object):
+    def preprocess_request(self):
+        pr = cProfile.Profile()
+        pr.enable()
+        request.pr = pr
+
+    def process_response(self, response):
+        pr = request.pr
+        pr.disable()
+        s = StringIO()
+        sortby = 'cumulative'
+        ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+        ps.print_stats()
+        print(s.getvalue())
+        return response

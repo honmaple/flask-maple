@@ -6,12 +6,26 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:16:28 (CST)
-# Last Update:星期二 2017-3-14 21:8:9 (CST)
+# Last Update:星期二 2017-12-05 11:39:22 (CST)
 #          By:
 # Description:
 # **************************************************************************
 import os
 from sqlalchemy import inspect
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from flask import jsonify
+
+
+def get_one_object(cls, filter_dict, msg='404'):
+    msg = msg
+    response = jsonify(msg=msg)
+    try:
+        instance = cls.query.filter_by(**filter_dict).one()
+        return True, instance
+    except NoResultFound:
+        return False, response
+    except MultipleResultsFound:
+        return False, response
 
 
 def gen_secret_key(length):

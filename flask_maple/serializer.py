@@ -6,15 +6,61 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期三 2017-5-10 16:24:6 (CST)
+# Last Update:星期一 2017-12-11 17:31:45 (CST)
 #          By:
 # Description:
 # **************************************************************************
 from sqlalchemy import inspect
 from sqlalchemy.orm.interfaces import (ONETOMANY, MANYTOMANY)
+from sqlalchemy.types import DateTime, Integer
+from flask_sqlalchemy import Pagination
+
+
+class Column(object):
+    def __init__(self, model):
+        self.inp = inspect(model)
+
+    @property
+    def columns(self):
+        return self.inp.columns
+
+    @property
+    def primary_columns(self):
+        return [column for column in self.inp.columns if column.primary]
+
+    @property
+    def nullable_columns(self):
+        return [column for column in self.inp.columns if column.nullable]
+
+    @property
+    def notnullable_columns(self):
+        return [column for column in self.inp.columns
+                if not column.nullable and not column.primary_key]
+
+    @property
+    def unique_columns(self):
+        return [column for column in self.inp.columns if column.unique]
+
+    @property
+    def relation_columns(self):
+        return [column for column in self.inp.columns if column.primary_key]
+
+    @property
+    def datetime_columns(self):
+        return [column for column in self.inp.columns
+                if isinstance(column.type, DateTime)]
+
+    @property
+    def integer_columns(self):
+        return [column for column in self.inp.columns
+                if isinstance(column.type, Integer)]
 
 
 class PageInfo(object):
+    '''
+    just for flask_sqlalchemy
+    '''
+
     def __init__(self, paginate):
         self.paginate = paginate
 
@@ -49,30 +95,30 @@ class Field(object):
 
 
 class Serializer(object):
-    def __init__(self,
-                 instance,
-                 many=False,
-                 include=[],
-                 exclude=[],
-                 extra=[],
-                 depth=2):
+    def __init__(self, instance, **kwargs):
+        meta = self.Meta
         self.instance = instance
-        self.many = many
-        self.depth = depth
-        self.include = include
-        self.exclude = exclude
-        self.extra = extra
+        self.depth = kwargs['depth'] if 'depth' in kwargs else meta.depth
+        self.include = kwargs[
+            'include'] if 'include' in kwargs else meta.include
+        self.exclude = kwargs[
+            'exclude'] if 'exclude' in kwargs else meta.exclude
+        self.extra = kwargs['extra'] if 'extra' in kwargs else meta.extra
+
+    def __new__(self, *args, **kwargs):
+        meta = self.Meta
+        for _meta in ['include', 'exclude', 'extra']:
+            if not hasattr(meta, _meta):
+                setattr(meta, _meta, [])
+        if not hasattr(meta, 'depth'):
+            setattr(meta, 'depth', 2)
+        return object.__new__(self)
 
     @property
     def data(self):
-        meta = self.Meta
-        if not self.include and hasattr(meta, 'include'):
-            self.include = meta.include
-        if not self.exclude and hasattr(meta, 'exclude'):
-            self.exclude = meta.exclude
-        if not self.extra and hasattr(meta, 'extra'):
-            self.extra = meta.extra
-        if self.many:
+        if isinstance(self.instance, Pagination):
+            self.instance = self.instance.items
+        if isinstance(self.instance, list):
             return self._serializerlist(self.instance, self.depth)
         return self._serializer(self.instance, self.depth)
 
@@ -133,18 +179,14 @@ class Serializer(object):
                 if relation.lazy == 'dynamic':
                     children = children.all()
                 result[column] = serializer(
-                    children,
-                    many=True,
-                    exclude=[relation.back_populates],
+                    children, exclude=[relation.back_populates],
                     depth=depth).data if children else []
             else:
                 child = getattr(instance, column)
                 if relation.lazy == 'dynamic':
                     child = child.first()
                 result[column] = serializer(
-                    child,
-                    many=False,
-                    exclude=[relation.back_populates],
+                    child, exclude=[relation.back_populates],
                     depth=depth).data if child else {}
         return result
 

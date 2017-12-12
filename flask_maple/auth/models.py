@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期四 2017-5-11 12:9:28 (CST)
+# Last Update:星期二 2017-12-05 15:01:07 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -18,9 +18,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_maple.mail import MailMixin
 from flask_maple.models import ModelMixin, db
+from flask_maple.permission.models import UserMixin as PermUserMixin
+from flask_maple.permission.models import GroupMixin as PermGroupMixin
+
+user_group = db.Table(
+    'user_group', db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('group_id', db.Integer, db.ForeignKey('group.id')))
 
 
-class GroupMixin(object):
+class GroupMixin(PermGroupMixin, ModelMixin):
     @declared_attr
     def id(cls):
         return db.Column(db.Integer, primary_key=True)
@@ -29,6 +35,20 @@ class GroupMixin(object):
     def name(cls):
         return db.Column(db.String(512), nullable=False, unique=True)
 
+    @declared_attr
+    def parent_id(cls):
+        return db.Column(db.Integer, db.ForeignKey('group.id'))
+
+    @declared_attr
+    def parent_group(cls):
+        return db.relationship(
+            'Group',
+            remote_side=[cls.id],
+            backref=db.backref(
+                'child_groups', remote_side=[cls.parent_id], lazy='dynamic'),
+            lazy='joined',
+            uselist=False)
+
     def __str__(self):
         return self.name
 
@@ -36,7 +56,7 @@ class GroupMixin(object):
         return '<Group %r>' % self.name
 
 
-class UserMixin(_UserMixin, MailMixin, ModelMixin):
+class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
     @declared_attr
     def id(cls):
         return db.Column(db.Integer, primary_key=True)
@@ -68,6 +88,15 @@ class UserMixin(_UserMixin, MailMixin, ModelMixin):
     @declared_attr
     def last_login(cls):
         return db.Column(db.DateTime, default=datetime.now())
+
+    @declared_attr
+    def groups(cls):
+        return db.relationship(
+            'Group',
+            secondary=user_group,
+            backref=db.backref(
+                'users', lazy='dynamic'),
+            lazy='dynamic')
 
     def set_password(self, raw_password):
         self.password = generate_password_hash(raw_password)

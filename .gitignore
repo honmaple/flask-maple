@@ -7,6 +7,9 @@ README
 *.swp
 *.log
 *.pyc
+*.db
+*.sqlite
+*.database
 **/.webassets-cache/
 example/migrations/
 example/test.db
