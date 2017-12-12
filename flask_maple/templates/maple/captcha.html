@@ -1,4 +1,6 @@
-<a id="clickCode" href="javascript:void(0)">
-  <img id="changeCode" src="{{ url_for('captcha') }}" alt="{{ _('Captcha') }}" style="max-width:180px;">
-</a>
-<span>{{ form.captcha(class="form-control",style="max-width:180px;display:inline;",placeholder="Captcha") }}</span>
+<div class="input-group">
+  <span class="input-group-addon" id="captcha-change" style="padding:0;border-right:none;">
+    <img id="captcha-code" src="{{ url_for('captcha') }}" alt="{{ _('Captcha') }}">
+  </span>
+  <input class="form-control" id="captcha" name="captcha" placeholder="Captcha" type="text" style="border-left:none;">
+</div>

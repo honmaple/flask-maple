@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期四 2017-5-11 12:17:45 (CST)
+# Last Update:星期二 2017-12-12 17:53:31 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,25 +14,14 @@ from functools import wraps
 from random import sample
 from string import ascii_letters, digits
 
-from flask import (current_app, flash, redirect, render_template, request,
-                   session, url_for)
+from flask import (flash, redirect, render_template, request, url_for, session)
 from flask.views import MethodView
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_maple.babel import gettext as _
-from flask_maple.form import return_errors
 from flask_maple.models import db
 from flask_maple.response import HTTPResponse
-from flask_principal import AnonymousIdentity, Identity, identity_changed
-
-from .forms import ForgetForm, LoginForm, RegisterForm
 
 User = db.Model._decl_class_registry['User']
-
-
-def login(user, remember):
-    login_user(user, remember=remember)
-    identity_changed.send(
-        current_app._get_current_object(), identity=Identity(user.id))
 
 
 def guest_permission(func):
@@ -46,30 +35,49 @@ def guest_permission(func):
     return decorator
 
 
+def check_params(keys):
+    def _check_params(func):
+        @wraps(func)
+        def decorator(*args, **kwargs):
+            keys.append('captcha')
+            post_data = request.json
+            for key in keys:
+                if not post_data.get(key):
+                    msg = '{} required'.format(key)
+                    return HTTPResponse(
+                        HTTPResponse.HTTP_PARA_ERROR,
+                        message=msg).to_response()
+            captcha = post_data['captcha']
+            if captcha.lower() != session['captcha'].lower():
+                msg = _('The captcha is error')
+                return HTTPResponse(
+                    HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+            return func(*args, **kwargs)
+
+        return decorator
+
+    return _check_params
+
+
 class LoginView(MethodView):
     decorators = [guest_permission]
 
     def get(self):
-        data = {'form': LoginForm()}
-        return render_template('auth/login.html', **data)
+        return render_template('auth/login.html')
 
+    @check_params(['username', 'password'])
     def post(self):
-        form = LoginForm()
-        if form.validate_on_submit():
-            username = form.username.data
-            password = form.password.data
-            remember = True if request.json.get('remember') else False
-            user = User.query.filter_by(username=username).first()
-            if user and user.check_password(password):
-                login(user, remember)
-                return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
+        post_data = request.json
+        username = post_data['username']
+        password = post_data['password']
+        remember = post_data.pop('remember', True)
+        user = User.query.filter_by(username=username).first()
+        if not user or not user.check_password(password):
             msg = _('Username or Password Error')
             return HTTPResponse(
-                HTTPResponse.HTTP_CODE_PARA_ERROR, message=msg).to_response()
-        else:
-            if form.errors:
-                return return_errors(form)
-            return render_template('auth/login.html', form=form)
+                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+        login_user(user, remember)
+        return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
 
 
 class LogoutView(MethodView):
@@ -77,48 +85,36 @@ class LogoutView(MethodView):
 
     def get(self):
         logout_user()
-        for key in ('identity.id', 'identity.auth_type'):
-            session.pop(key, None)
-        identity_changed.send(
-            current_app._get_current_object(), identity=AnonymousIdentity())
         return redirect(request.args.get('next') or '/')
 
 
 class RegisterView(MethodView):
     def get(self):
-        form = RegisterForm()
-        data = {'form': form}
-        return render_template('auth/register.html', **data)
+        return render_template('auth/register.html')
 
+    @check_params(['username', 'password', 'email'])
     def post(self):
-        form = RegisterForm()
-        if form.validate_on_submit():
-            email = form.email.data
-            username = form.username.data
-            password = form.password.data
-            if User.query.filter_by(email=email).exists():
-                msg = _('The email has been registered')
-                return HTTPResponse(
-                    HTTPResponse.HTTP_CODE_PARA_ERROR,
-                    message=msg).to_response()
-            if User.query.filter_by(username=username).exists():
-                msg = _('The username has been registered')
-                return HTTPResponse(
-                    HTTPResponse.HTTP_CODE_PARA_ERROR,
-                    message=msg).to_response()
-            user = User(username=username, email=email)
-            user.set_password(password)
-            user.save()
-            login(user, True)
-            self.register_email(user)
-            flash(_('An email has been sent to your.Please receive'))
-            return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
-        else:
-            if form.errors:
-                return return_errors(form)
-            return render_template('auth/register.html', form=form)
+        post_data = request.json
+        username = post_data['username']
+        password = post_data['password']
+        email = post_data['email']
+        if User.query.filter_by(email=email).exists():
+            msg = _('The email has been registered')
+            return HTTPResponse(
+                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+        if User.query.filter_by(username=username).exists():
+            msg = _('The username has been registered')
+            return HTTPResponse(
+                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+        user = User(username=username, email=email)
+        user.set_password(password)
+        user.save()
+        login_user(user, True)
+        self.send_email(user)
+        flash(_('An email has been sent to your.Please receive'))
+        return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
 
-    def register_email(self, user):
+    def send_email(self, user):
         token = user.email_token
         confirm_url = url_for(
             'auth.confirm_token', token=token, _external=True)
@@ -131,32 +127,25 @@ class ForgetView(MethodView):
     decorators = [guest_permission]
 
     def get(self):
-        form = ForgetForm()
-        data = {'form': form}
-        return render_template('auth/forget.html', **data)
+        return render_template('auth/forget.html')
 
+    @check_params(['email'])
     def post(self):
-        form = ForgetForm()
-        if form.validate_on_submit():
-            email = form.email.data
-            user = User.query.filter_by(email=email).first()
-            if not user:
-                msg = _('The email is error')
-                return HTTPResponse(
-                    HTTPResponse.HTTP_CODE_PARA_ERROR,
-                    message=msg).to_response()
-            password = ''.join(sample(ascii_letters + digits, 8))
-            user.set_password(password)
-            user.save()
-            self.send_email(user, password)
-            flash(
-                _('An email has been sent to you.'
-                  'Please receive and update your password in time'))
-            return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
-        else:
-            if form.errors:
-                return return_errors(form)
-            return render_template('auth/forget.html', form=form)
+        post_data = request.json
+        email = post_data['email']
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            msg = _('The email is error')
+            return HTTPResponse(
+                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+        password = ''.join(sample(ascii_letters + digits, 8))
+        user.set_password(password)
+        user.save()
+        self.send_email(user, password)
+        flash(
+            _('An email has been sent to you.'
+              'Please receive and update your password in time'))
+        return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
 
     def send_email(self, user, password):
         html = render_template('templet/forget.html', confirm_url=password)

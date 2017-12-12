@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期二 2017-12-05 15:01:07 (CST)
+# Last Update:星期二 2017-12-12 16:43:17 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -16,8 +16,8 @@ from sqlalchemy.ext.declarative import declared_attr
 from flask_login import UserMixin as _UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flask_maple.mail import MailMixin
 from flask_maple.models import ModelMixin, db
+from flask_maple.mail import MailMixin
 from flask_maple.permission.models import UserMixin as PermUserMixin
 from flask_maple.permission.models import GroupMixin as PermGroupMixin
 
@@ -103,6 +103,10 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
 
     def check_password(self, raw_password):
         return check_password_hash(self.password, raw_password)
+
+    @property
+    def is_logined(self):
+        return self.is_authenticated
 
     def __str__(self):
         return self.username
