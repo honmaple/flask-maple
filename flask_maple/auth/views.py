@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期二 2017-12-12 17:53:31 (CST)
+# Last Update:星期三 2017-12-13 11:12:04 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -17,6 +17,7 @@ from string import ascii_letters, digits
 from flask import (flash, redirect, render_template, request, url_for, session)
 from flask.views import MethodView
 from flask_login import current_user, login_required, login_user, logout_user
+from flask_maple.babel import domain
 from flask_maple.babel import gettext as _
 from flask_maple.models import db
 from flask_maple.response import HTTPResponse
@@ -24,7 +25,7 @@ from flask_maple.response import HTTPResponse
 User = db.Model._decl_class_registry['User']
 
 
-def guest_permission(func):
+def guest_required(func):
     @wraps(func)
     def decorator(*args, **kwargs):
         if current_user.is_authenticated:
@@ -39,11 +40,28 @@ def check_params(keys):
     def _check_params(func):
         @wraps(func)
         def decorator(*args, **kwargs):
+            length = {
+                'username': lambda value: 4 <= len(value) <= 20,
+                'password': lambda value: 4 <= len(value) <= 20,
+            }
+            babel = {
+                'username': _("Username"),
+                'password': _("Password"),
+                'email': _("Email"),
+                'captcha': _("Captcha")
+            }
             keys.append('captcha')
             post_data = request.json
             for key in keys:
                 if not post_data.get(key):
-                    msg = '{} required'.format(key)
+                    msg = _('The %(key)s is required', key=babel[key])
+                    return HTTPResponse(
+                        HTTPResponse.HTTP_PARA_ERROR,
+                        message=msg).to_response()
+                if not length.get(key, lambda value: True)(post_data[key]):
+                    msg = _(
+                        "The %(key)s's length must be between 4 to 20 characters",
+                        key=babel[key])
                     return HTTPResponse(
                         HTTPResponse.HTTP_PARA_ERROR,
                         message=msg).to_response()
@@ -60,9 +78,10 @@ def check_params(keys):
 
 
 class LoginView(MethodView):
-    decorators = [guest_permission]
+    decorators = [guest_required]
 
     def get(self):
+        domain.as_default()
         return render_template('auth/login.html')
 
     @check_params(['username', 'password'])
@@ -90,6 +109,7 @@ class LogoutView(MethodView):
 
 class RegisterView(MethodView):
     def get(self):
+        domain.as_default()
         return render_template('auth/register.html')
 
     @check_params(['username', 'password', 'email'])
@@ -124,9 +144,10 @@ class RegisterView(MethodView):
 
 
 class ForgetView(MethodView):
-    decorators = [guest_permission]
+    decorators = [guest_required]
 
     def get(self):
+        domain.as_default()
         return render_template('auth/forget.html')
 
     @check_params(['email'])

@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-01 20:32:54 (CST)
-# Last Update:星期二 2017-12-12 17:06:57 (CST)
+# Last Update:星期三 2017-12-13 11:35:31 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -18,8 +18,15 @@ from flask_login import LoginManager
 from flask_babelex import Babel
 
 Auth(app)
-Babel(app)
 Captcha(app)
+
+babel = Babel(app)
+
+
+@babel.localeselector
+def get_locale():
+    return 'zh'
+
 
 login_manager = LoginManager(app)
 login_manager.login_view = "auth.login"
