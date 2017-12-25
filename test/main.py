@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-12-05 11:48:53 (CST)
-# Last Update:星期四 2017-12-07 18:07:38 (CST)
+# Last Update:星期五 2017-12-22 17:30:29 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -24,9 +24,9 @@ from flask_wtf import Form
 from flask_admin.contrib.sqla import ModelView
 
 
-
 class User(UserMixin, db.Model):
     pass
+
 
 class Group(GroupMixin, db.Model):
     pass
@@ -53,7 +53,6 @@ api = QuickApi(app)
 manager = Manager(app)
 db.init_app(app)
 api.create_api(User)
-
 
 admin = Admin(name='devops', template_mode='bootstrap3')
 for model in [User, Group, Permission]:

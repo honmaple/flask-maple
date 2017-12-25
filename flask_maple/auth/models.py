@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期二 2017-12-12 16:43:17 (CST)
+# Last Update:星期一 2017-12-25 16:31:35 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -49,6 +49,15 @@ class GroupMixin(PermGroupMixin, ModelMixin):
             lazy='joined',
             uselist=False)
 
+    def get_child_groups(self, depth=1):
+        child_groups = self.child_groups.all()
+        depth -= 1
+        if depth > 0:
+            child_groups.extend([g
+                                 for group in child_groups
+                                 for g in group.get_child_groups(depth)])
+        return list(set(child_groups))
+
     def __str__(self):
         return self.name
 
@@ -83,11 +92,11 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
 
     @declared_attr
     def register_time(cls):
-        return db.Column(db.DateTime, default=datetime.now())
+        return db.Column(db.DateTime, default=datetime.now)
 
     @declared_attr
     def last_login(cls):
-        return db.Column(db.DateTime, default=datetime.now())
+        return db.Column(db.DateTime, default=datetime.now)
 
     @declared_attr
     def groups(cls):

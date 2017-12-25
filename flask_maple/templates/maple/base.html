@@ -11,6 +11,11 @@
       {%- assets "home_js" -%}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
       {%- endassets %}
+      <script type="text/javascript">
+        var g = {
+            csrftoken: "{{ csrf_token() }}"
+        };
+      </script>
     {%- endblock -%}
     {% block style %}
       <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">

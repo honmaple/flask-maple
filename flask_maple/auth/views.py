@@ -17,6 +17,7 @@ from string import ascii_letters, digits
 from flask import (flash, redirect, render_template, request, url_for, session)
 from flask.views import MethodView
 from flask_login import current_user, login_required, login_user, logout_user
+from flask_maple.serializer import Serializer
 from flask_maple.babel import domain
 from flask_maple.babel import gettext as _
 from flask_maple.models import db
@@ -96,7 +97,10 @@ class LoginView(MethodView):
             return HTTPResponse(
                 HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
         login_user(user, remember)
-        return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
+        serializer = user.serializer if hasattr(
+            user, 'serializer') else Serializer(user)
+        return HTTPResponse(
+            HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
 
 
 class LogoutView(MethodView):
@@ -132,7 +136,10 @@ class RegisterView(MethodView):
         login_user(user, True)
         self.send_email(user)
         flash(_('An email has been sent to your.Please receive'))
-        return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
+        serializer = user.serializer if hasattr(
+            user, 'serializer') else Serializer(user)
+        return HTTPResponse(
+            HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
 
     def send_email(self, user):
         token = user.email_token

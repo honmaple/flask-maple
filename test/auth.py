@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-01 20:32:54 (CST)
-# Last Update:星期三 2017-12-13 11:35:31 (CST)
+# Last Update:星期一 2017-12-18 10:57:58 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -16,9 +16,11 @@ from flask_maple.bootstrap import Bootstrap
 from flask_maple.captcha import Captcha
 from flask_login import LoginManager
 from flask_babelex import Babel
+from flask_wtf.csrf import CSRFProtect
 
 Auth(app)
 Captcha(app)
+CSRFProtect(app)
 
 babel = Babel(app)
 
