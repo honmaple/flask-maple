@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期三 2017-12-13 11:12:04 (CST)
+# Last Update:星期五 2018-01-05 00:18:28 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -16,7 +16,7 @@ from string import ascii_letters, digits
 
 from flask import (flash, redirect, render_template, request, url_for, session)
 from flask.views import MethodView
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_required
 from flask_maple.serializer import Serializer
 from flask_maple.babel import domain
 from flask_maple.babel import gettext as _
@@ -66,7 +66,7 @@ def check_params(keys):
                     return HTTPResponse(
                         HTTPResponse.HTTP_PARA_ERROR,
                         message=msg).to_response()
-            captcha = post_data['captcha']
+                captcha = post_data['captcha']
             if captcha.lower() != session['captcha'].lower():
                 msg = _('The captcha is error')
                 return HTTPResponse(
@@ -96,7 +96,7 @@ class LoginView(MethodView):
             msg = _('Username or Password Error')
             return HTTPResponse(
                 HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
-        login_user(user, remember)
+        user.login(remember)
         serializer = user.serializer if hasattr(
             user, 'serializer') else Serializer(user)
         return HTTPResponse(
@@ -107,7 +107,7 @@ class LogoutView(MethodView):
     decorators = [login_required]
 
     def get(self):
-        logout_user()
+        current_user.logout()
         return redirect(request.args.get('next') or '/')
 
 
@@ -133,7 +133,7 @@ class RegisterView(MethodView):
         user = User(username=username, email=email)
         user.set_password(password)
         user.save()
-        login_user(user, True)
+        user.login(True)
         self.send_email(user)
         flash(_('An email has been sent to your.Please receive'))
         serializer = user.serializer if hasattr(

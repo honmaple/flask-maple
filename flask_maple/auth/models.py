@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期一 2017-12-25 16:31:35 (CST)
+# Last Update:星期五 2018-01-05 00:12:51 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,6 +14,7 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
 
 from flask_login import UserMixin as _UserMixin
+from flask_login import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_maple.models import ModelMixin, db
@@ -116,6 +117,12 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
     @property
     def is_logined(self):
         return self.is_authenticated
+
+    def login(self, remember=True):
+        login_user(self, remember)
+
+    def logout(self):
+        logout_user()
 
     def __str__(self):
         return self.username
