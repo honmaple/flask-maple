@@ -1,29 +1,34 @@
 $(document).ready(function(){
-  $('a#clickCode').click(function() {
-    $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", g.csrftoken);
+      }
+    }
+  });
+  $('#captcha-change').click(function() {
+    $("#captcha-code").attr("src","/captcha" + "?code=" + Math.random());
   });
   function AuthCallBack(response) {
     if (response.status === '200')
     {
-      window.location = url.index;
+      window.location = "/";
     }
     else
     {
-      $("#showerror").show();
-      $("#changeCode").attr("src",url.captcha + "?code=" + Math.random());
+      $("#captcha-code").attr("src","/captcha" + "?code=" + Math.random());
       $("#captcha").val("");
       if (response.description !==""){
-        $("#error").text(response.description);
-      }
-      else{
-        $("#error").text(response.message);
+          alert(response.description);
+      } else{
+          alert(response.message);
       }
     }
   }
   $('button#login').click(function() {
     $.ajax ({
       type : "POST",
-      url : url.login,
+      url : "/login",
       data:JSON.stringify({
         username: $('#username').val(),
         password: $('#password').val(),
@@ -39,7 +44,7 @@ $(document).ready(function(){
   $('button#register').click(function() {
     $.ajax ({
       type : "POST",
-      url : url.register,
+      url : "/register",
       data:JSON.stringify({
         username: $('#username').val(),
         email: $('#email').val(),
@@ -55,7 +60,7 @@ $(document).ready(function(){
   $('button#forget').click(function() {
     $.ajax ({
       type : "POST",
-      url : url.forget,
+      url : "/forget",
       data:JSON.stringify({
         email: $('#email').val(),
         captcha:$("#captcha").val()

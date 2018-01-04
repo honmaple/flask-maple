@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期三 2017-5-10 14:32:59 (CST)
+# Last Update:星期一 2017-12-25 16:32:22 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -20,6 +20,7 @@ from sqlalchemy.util import to_list
 from sqlalchemy.sql import operators, extract
 from sqlalchemy.ext.declarative import declared_attr
 from datetime import datetime
+from flask_maple.serializer import Serializer
 
 
 class DoesNotExist(Exception):
@@ -179,6 +180,11 @@ class ModelMixin(object):
         db.session.delete(self)
         db.session.commit()
 
+    def to_json(self, include=[], exclude=[], extra=[], depth=2):
+        serializer = Serializer(
+            self, include=include, exclude=exclude, extra=extra, depth=depth)
+        return serializer.data
+
     # @classmethod
     # def bulk_create(cls, instances):
     #     db.session.add_all(instances)
@@ -247,12 +253,12 @@ class ModelMixin(object):
 class ModelTimeMixin(ModelMixin):
     @declared_attr
     def created_at(cls):
-        return db.Column(db.DateTime, default=datetime.utcnow())
+        return db.Column(db.DateTime, default=datetime.now)
 
     @declared_attr
     def updated_at(cls):
         return db.Column(
-            db.DateTime, default=datetime.utcnow(), onupdate=datetime.utcnow())
+            db.DateTime, default=datetime.now, onupdate=datetime.now)
 
 
 class ModelUserMixin(ModelTimeMixin):

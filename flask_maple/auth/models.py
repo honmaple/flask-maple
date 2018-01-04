@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期二 2017-12-05 15:01:07 (CST)
+# Last Update:星期五 2018-01-05 00:12:51 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,10 +14,11 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declared_attr
 
 from flask_login import UserMixin as _UserMixin
+from flask_login import login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flask_maple.mail import MailMixin
 from flask_maple.models import ModelMixin, db
+from flask_maple.mail import MailMixin
 from flask_maple.permission.models import UserMixin as PermUserMixin
 from flask_maple.permission.models import GroupMixin as PermGroupMixin
 
@@ -48,6 +49,15 @@ class GroupMixin(PermGroupMixin, ModelMixin):
                 'child_groups', remote_side=[cls.parent_id], lazy='dynamic'),
             lazy='joined',
             uselist=False)
+
+    def get_child_groups(self, depth=1):
+        child_groups = self.child_groups.all()
+        depth -= 1
+        if depth > 0:
+            child_groups.extend([g
+                                 for group in child_groups
+                                 for g in group.get_child_groups(depth)])
+        return list(set(child_groups))
 
     def __str__(self):
         return self.name
@@ -83,11 +93,11 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
 
     @declared_attr
     def register_time(cls):
-        return db.Column(db.DateTime, default=datetime.now())
+        return db.Column(db.DateTime, default=datetime.now)
 
     @declared_attr
     def last_login(cls):
-        return db.Column(db.DateTime, default=datetime.now())
+        return db.Column(db.DateTime, default=datetime.now)
 
     @declared_attr
     def groups(cls):
@@ -103,6 +113,16 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
 
     def check_password(self, raw_password):
         return check_password_hash(self.password, raw_password)
+
+    @property
+    def is_logined(self):
+        return self.is_authenticated
+
+    def login(self, remember=True):
+        login_user(self, remember)
+
+    def logout(self):
+        logout_user()
 
     def __str__(self):
         return self.username

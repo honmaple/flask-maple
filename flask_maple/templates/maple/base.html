@@ -5,23 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}{%- endblock -%}</title>
-    {%- if use_auth -%}
-      {% from 'maple/auth.html' import base as auth_base %}
-      {{ auth_base() }}
-    {% endif %}
     {%- block script %}
-      {%- if cdn %}
-        <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
-        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-      {%- endif %}
+      <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+      <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       {%- assets "home_js" -%}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>
       {%- endassets %}
+      <script type="text/javascript">
+        var g = {
+            csrftoken: "{{ csrf_token() }}"
+        };
+      </script>
     {%- endblock -%}
     {% block style %}
-      {%- if cdn %}
-        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
-      {%- endif %}
+      <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
       {%- assets "home_css" %}
         <link rel="stylesheet" href="{{ ASSET_URL }}" />
       {%- endassets %}
