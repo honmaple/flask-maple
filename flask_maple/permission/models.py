@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-08-29 16:47:32 (CST)
-# Last Update:星期一 2017-12-25 17:36:58 (CST)
+# Last Update:星期一 2018-01-08 11:22:58 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -168,7 +168,7 @@ class PermissionMixin(ModelMixin):
 
     @declared_attr
     def description(cls):
-        return db.Column(db.Text(2048))
+        return db.Column(db.String(2048))
 
     @declared_attr
     def users(cls):

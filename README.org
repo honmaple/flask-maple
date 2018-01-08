@@ -1,6 +1,6 @@
 * Flask-Maple
 
-  [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/pypi-v0.5.0-brightgreen.svg]]
+  [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/pypi-v0.5.2-brightgreen.svg]]
   [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/python-3.4-brightgreen.svg]]
   [[LICENSE][https://img.shields.io/badge/license-BSD-blue.svg]]
 

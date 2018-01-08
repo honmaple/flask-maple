@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期五 2018-01-05 00:18:28 (CST)
+# Last Update:星期一 2018-01-08 11:21:43 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -66,11 +66,12 @@ def check_params(keys):
                     return HTTPResponse(
                         HTTPResponse.HTTP_PARA_ERROR,
                         message=msg).to_response()
-                captcha = post_data['captcha']
-            if captcha.lower() != session['captcha'].lower():
+            captcha = post_data['captcha']
+            if captcha.lower() != session.pop('captcha', '00000').lower():
                 msg = _('The captcha is error')
                 return HTTPResponse(
-                    HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+                    HTTPResponse.HTTP_PARA_ERROR,
+                    message=msg).to_response()
             return func(*args, **kwargs)
 
         return decorator
@@ -98,7 +99,7 @@ class LoginView(MethodView):
                 HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
         user.login(remember)
         serializer = user.serializer if hasattr(
-            user, 'serializer') else Serializer(user)
+            user, 'serializer') else Serializer(user, depth=1)
         return HTTPResponse(
             HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
 
@@ -137,7 +138,7 @@ class RegisterView(MethodView):
         self.send_email(user)
         flash(_('An email has been sent to your.Please receive'))
         serializer = user.serializer if hasattr(
-            user, 'serializer') else Serializer(user)
+            user, 'serializer') else Serializer(user, depth=1)
         return HTTPResponse(
             HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
 
