@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-08-29 16:47:32 (CST)
-# Last Update:星期一 2018-01-08 11:22:58 (CST)
+# Last Update: 星期四 2018-02-08 14:31:35 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -25,7 +25,11 @@ group_permission = db.Table(
 
 
 class UserMixin(object):
-    def has_perm_cache(self, *args, **kwargs):
+    def perm_cache(self,
+                   action,
+                   resource,
+                   resource_type='endpoint',
+                   and_=False):
         return
 
     def add_perm(self,
@@ -87,7 +91,7 @@ class UserMixin(object):
         return action
 
     def has_perm(self, action, resource, resource_type='endpoint', and_=False):
-        perm_cache = self.has_perm_cache(action, resource, resource_type, and_)
+        perm_cache = self.perm_cache(action, resource, resource_type, and_)
         if perm_cache is not None:
             return perm_cache
         if isinstance(resource, (list, tuple)):

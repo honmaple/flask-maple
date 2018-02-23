@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期一 2017-12-11 17:31:45 (CST)
+# Last Update:星期二 2018-01-09 13:17:46 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -26,7 +26,7 @@ class Column(object):
 
     @property
     def primary_columns(self):
-        return [column for column in self.inp.columns if column.primary]
+        return [column for column in self.inp.columns if column.primary_key]
 
     @property
     def nullable_columns(self):
@@ -43,7 +43,7 @@ class Column(object):
 
     @property
     def relation_columns(self):
-        return [column for column in self.inp.columns if column.primary_key]
+        return [relation for relation in self.inp.relationships]
 
     @property
     def datetime_columns(self):
@@ -54,6 +54,12 @@ class Column(object):
     def integer_columns(self):
         return [column for column in self.inp.columns
                 if isinstance(column.type, Integer)]
+
+    @property
+    def foreign_keys(self):
+        columns = []
+        [columns.extend(list(column.foreign_keys)) for column in self.inp.columns]
+        return [i.parent for i in columns]
 
 
 class PageInfo(object):

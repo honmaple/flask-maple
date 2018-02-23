@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-12-05 11:48:53 (CST)
-# Last Update:星期五 2017-12-22 17:30:29 (CST)
+# Last Update:星期二 2018-01-09 14:00:40 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -49,10 +49,8 @@ class config:
 
 app = Flask(__name__)
 app.config.from_object(config)
-api = QuickApi(app)
 manager = Manager(app)
 db.init_app(app)
-api.create_api(User)
 
 admin = Admin(name='devops', template_mode='bootstrap3')
 for model in [User, Group, Permission]:

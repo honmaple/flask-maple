@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-12-05 11:24:11 (CST)
-# Last Update:星期三 2018-01-03 16:41:09 (CST)
+# Last Update: 星期五 2018-02-23 10:49:12 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -14,7 +14,7 @@ from flask import request, abort, g
 from functools import wraps
 
 
-def is_allowed(groups=[], resource_type='endpoint'):
+def is_allowed(groups=[], resource_type='endpoint', response=None):
     def _is_allowed(func):
         @wraps(func)
         def _wraps(*args, **kwargs):
@@ -23,14 +23,19 @@ def is_allowed(groups=[], resource_type='endpoint'):
             if user_in_groups or user.has_perm(request.method,
                                                request.blueprint):
                 return func(*args, **kwargs)
-            abort(403)
+            if response is None:
+                abort(403)
+            elif callable(response):
+                return response()
+            else:
+                return response
 
         return _wraps
 
     return _is_allowed
 
 
-def is_denied(groups=[], resource_type='endpoint'):
+def is_denied(groups=[], resource_type='endpoint', response=None):
     def _is_denied(func):
         @wraps(func)
         def _wraps(*args, **kwargs):
@@ -39,8 +44,12 @@ def is_denied(groups=[], resource_type='endpoint'):
             if user_in_groups or user.has_perm(request.method,
                                                request.blueprint):
                 return func(*args, **kwargs)
-            abort(403)
-
+            if response is None:
+                abort(403)
+            elif callable(response):
+                return response()
+            else:
+                return response
         return _wraps
 
     return _is_denied
