@@ -2,11 +2,11 @@
 # -*- coding=UTF-8 -*-
 # **************************************************************************
 # Copyright © 2016 jianglin
-# File Name: flask_maple_bootstrap.py
+# File Name: bootstrap.py
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update:星期二 2017-12-12 18:16:09 (CST)
+# Last Update: 星期五 2018-02-23 12:00:12 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************
@@ -16,6 +16,9 @@ from flask_assets import Environment, Bundle
 
 class Bootstrap(object):
     def __init__(self, app=None, js=None, css=None, use_auth=False):
+        '''
+        use_auth: if `True`, add login.js to assets
+        '''
         self.js = js
         self.css = css
         self.use_auth = use_auth

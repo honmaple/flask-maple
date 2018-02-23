@@ -6,11 +6,14 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-10-28 23:16:14 (CST)
-# Last Update:星期三 2017-5-10 14:34:1 (CST)
+# Last Update: 星期五 2018-02-23 11:41:04 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from redis import StrictRedis
+try:
+    from rediscluster import StrictRedisCluster as StrictRedis
+except ImportError:
+    from redis import StrictRedis
 
 
 class Redis(object):

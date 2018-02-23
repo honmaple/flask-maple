@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-08-29 16:47:32 (CST)
-# Last Update: 星期四 2018-02-08 14:31:35 (CST)
+# Last Update: 星期五 2018-02-23 22:59:49 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -37,6 +37,10 @@ class UserMixin(object):
                  resource,
                  resource_type='endpoint',
                  description=None):
+        '''
+        if `resource_type == 'model', action is in `[intert, delete, update, select]``
+        else action is in `[post, delete, put, get]`
+        '''
         action = self._perm_action(action, resource_type)
         perm = self.permissions.filter_by(
             resource=resource, resource_type=resource_type).one_or_none()

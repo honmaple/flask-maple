@@ -19,6 +19,7 @@ cd flask-maple
 python setup.py install
    #+END_SRC
 
+** App
 ** Bootstrap
    It's very sample to use bootstrap
    #+BEGIN_SRC python
@@ -111,3 +112,11 @@ class User(db.Model, UserMixin):
    auth = Auth(app, db=db, mail=mail, user_model=User,use_principal = True)
    #+END_SRC
    then you can visit [[http://127.0.0.1:5000/login]]
+   
+** Redis
+** Mail
+** Form
+** Model
+** Serializer
+** Middleware
+** Logging

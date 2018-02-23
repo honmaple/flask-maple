@@ -2,17 +2,16 @@
 # -*- coding: utf-8 -*-
 # **************************************************************************
 # Copyright © 2016, 2017 jianglin
-# File Name: logging.py
+# File Name: log.py
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-19 10:32:05 (CST)
-# Last Update:星期二 2017-12-12 15:56:55 (CST)
+# Last Update: 星期五 2018-02-23 11:10:36 (CST)
 #          By:
 # Description:
 # **************************************************************************
 import logging
 import logging.config
-import os
 from logging import Formatter
 from logging.handlers import SMTPHandler
 from threading import Thread
@@ -68,15 +67,16 @@ class Logging(object):
         error_file_handler.setFormatter(formatter)
         app.logger.addHandler(error_file_handler)
 
-        # get mail info from flask_mail extension
-        mail_config = {
-            'username': app.config['MAIL_USERNAME'],
-            'password': app.config['MAIL_PASSWORD'],
-            'server': app.config['MAIL_SERVER'],
-            'port': app.config['MAIL_PORT'],
-            'default_sender': app.config['MAIL_DEFAULT_SENDER']
-        }
         if config['send_mail']:
+            # get mail info from flask_mail extension
+            mail_config = {
+                'username': app.config['MAIL_USERNAME'],
+                'password': app.config['MAIL_PASSWORD'],
+                'server': app.config['MAIL_SERVER'],
+                'port': app.config['MAIL_PORT'],
+                'default_sender': app.config['MAIL_DEFAULT_SENDER']
+            }
+
             credentials = (mail_config['username'], mail_config['password'])
             mailhost = (mail_config['server'], mail_config['port'])
             mail_handler = ThreadedSMTPHandler(
