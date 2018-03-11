@@ -2,20 +2,19 @@
 # -*- coding: utf-8 -*-
 # **************************************************************************
 # Copyright © 2016 jianglin
-# File Name: _compat.py
+# File Name: babel.py
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-11 23:42:23 (CST)
-# Last Update:星期三 2017-12-13 10:18:14 (CST)
+# Last Update: Sunday 2018-03-11 16:10:27 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask_babelex import Domain
 from flask_maple import translations
 
-translations = translations.__path__[0]
-domain = Domain(translations)
 
-gettext = domain.gettext
-ngettext = domain.ngettext
-lazy_gettext = domain.lazy_gettext
+def init_app(app):
+    default_translation = app.config.get('BABEL_TRANSLATION_DIRECTORIES',
+                                         'translations').split(';')
+    default_translation.append(translations.path)
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = ';'.join(default_translation)

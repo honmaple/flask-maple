@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update:星期一 2018-01-08 11:21:43 (CST)
+# Last Update: Sunday 2018-03-11 16:13:15 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -17,9 +17,8 @@ from string import ascii_letters, digits
 from flask import (flash, redirect, render_template, request, url_for, session)
 from flask.views import MethodView
 from flask_login import current_user, login_required
+from flask_babel import gettext as _
 from flask_maple.serializer import Serializer
-from flask_maple.babel import domain
-from flask_maple.babel import gettext as _
 from flask_maple.models import db
 from flask_maple.response import HTTPResponse
 
@@ -83,7 +82,6 @@ class LoginView(MethodView):
     decorators = [guest_required]
 
     def get(self):
-        domain.as_default()
         return render_template('auth/login.html')
 
     @check_params(['username', 'password'])
@@ -98,7 +96,7 @@ class LoginView(MethodView):
             return HTTPResponse(
                 HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
         user.login(remember)
-        serializer = user.serializer if hasattr(
+        serializer = user.serializer() if hasattr(
             user, 'serializer') else Serializer(user, depth=1)
         return HTTPResponse(
             HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
@@ -114,7 +112,6 @@ class LogoutView(MethodView):
 
 class RegisterView(MethodView):
     def get(self):
-        domain.as_default()
         return render_template('auth/register.html')
 
     @check_params(['username', 'password', 'email'])
@@ -137,7 +134,7 @@ class RegisterView(MethodView):
         user.login(True)
         self.send_email(user)
         flash(_('An email has been sent to your.Please receive'))
-        serializer = user.serializer if hasattr(
+        serializer = user.serializer() if hasattr(
             user, 'serializer') else Serializer(user, depth=1)
         return HTTPResponse(
             HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
@@ -155,7 +152,6 @@ class ForgetView(MethodView):
     decorators = [guest_required]
 
     def get(self):
-        domain.as_default()
         return render_template('auth/forget.html')
 
     @check_params(['email'])

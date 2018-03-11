@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 12:59:40 (CST)
-# Last Update:星期三 2017-5-10 15:29:27 (CST)
+# Last Update: Sunday 2018-03-11 14:51:04 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -19,7 +19,7 @@ from flask_maple.auth.models import User
 from flask_maple.auth.views import Auth
 from flask_maple.bootstrap import Bootstrap
 from flask_maple.captcha import Captcha
-from flask_babelex import Babel, Domain
+from flask_babel import Babel, Domain
 from flask_login import LoginManager
 
 

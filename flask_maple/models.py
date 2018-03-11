@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update:星期一 2017-12-25 16:32:22 (CST)
+# Last Update: Sunday 2018-03-11 16:33:25 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -152,6 +152,14 @@ class QueryMixin(BaseQuery):
     def exists(self):
         session = self.session
         return session.query(super(QueryMixin, self).exists()).scalar()
+
+    def get_or_create(self, **kwargs):
+        obj = self.first()
+        if not obj:
+            mapper_class = self._bind_mapper().class_
+            obj = mapper_class(**kwargs)
+            obj.save()
+        return obj
 
     # def one(self):
     #     return super(QueryMixin, self).one()

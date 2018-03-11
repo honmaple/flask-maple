@@ -6,7 +6,10 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-12 00:14:07 (CST)
-# Last Update:星期一 2016-12-12 0:14:8 (CST)
+# Last Update: Sunday 2018-03-11 15:57:41 (CST)
 #          By:
 # Description:
 # **************************************************************************
+import os
+
+path = os.path.abspath(os.path.dirname(__file__))

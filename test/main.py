@@ -6,12 +6,13 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2017-12-05 11:48:53 (CST)
-# Last Update:星期二 2018-01-09 14:00:40 (CST)
+# Last Update: Sunday 2018-03-11 15:53:59 (CST)
 #          By:
 # Description:
 # **************************************************************************
 import sys
 sys.path.append('..')
+
 from flask_script import Manager
 from flask import Flask
 from flask_maple.models import db
@@ -22,6 +23,7 @@ from flask_maple.permission.models import PermissionMixin
 from flask_admin import Admin
 from flask_wtf import Form
 from flask_admin.contrib.sqla import ModelView
+import os
 
 
 class User(UserMixin, db.Model):
@@ -45,6 +47,11 @@ class config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:password@localhost/blog'
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+
+    BABEL_TRANSLATION_DIRECTORIES = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__), os.pardir, 'flask_maple',
+            'translations'))
 
 
 app = Flask(__name__)

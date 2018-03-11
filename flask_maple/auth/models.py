@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: xiyang0807@gmail.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update:星期五 2018-01-05 00:12:51 (CST)
+# Last Update: Sunday 2018-03-11 14:47:52 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -110,6 +110,7 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
 
     def set_password(self, raw_password):
         self.password = generate_password_hash(raw_password)
+        return self.password
 
     def check_password(self, raw_password):
         return check_password_hash(self.password, raw_password)
