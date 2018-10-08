@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 # **************************************************************************
 # Copyright © 2016 jianglin
-# File Name: lazyload.py
+# File Name: lazy.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-11-08 23:02:24 (CST)
-# Last Update:星期二 2016-11-8 23:2:26 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
 #          By:
 # Description:
 # **************************************************************************

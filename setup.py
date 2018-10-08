@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: setup.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-04-16 22:19:36 (CST)
-# Last Update: Sunday 2018-03-11 16:36:28 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:50 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -18,7 +18,7 @@ setup(
     url='https://github.com/honmaple/flask-maple',
     license='BSD',
     author='honmaple',
-    author_email='xiyang0807@gmail.com',
+    author_email='mail@honmaple.com',
     description='captcha ,bootstrap,easy login and more flask tips.',
     long_description='easy to use captcha ,bootstrap and login and more flask tips.Please visit https://github.com/honmaple/flask-maple',
     packages=['flask_maple'],

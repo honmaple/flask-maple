@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: redis.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-10-28 23:16:14 (CST)
-# Last Update: 星期五 2018-02-23 11:41:04 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
 #          By:
 # Description:
 # **************************************************************************

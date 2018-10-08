@@ -4,9 +4,9 @@
 # Copyright © 2016, 2017 jianglin
 # File Name: log.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-11-19 10:32:05 (CST)
-# Last Update: 星期五 2018-02-23 11:10:36 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
 #          By:
 # Description:
 # **************************************************************************

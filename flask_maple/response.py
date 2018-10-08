@@ -4,58 +4,118 @@
 # Copyright © 2016 jianglin
 # File Name: response.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update: Sunday 2018-03-11 15:27:55 (CST)
+# Last Update: Monday 2018-10-08 17:34:05 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask import jsonify
-from flask_babel import gettext as _
+from flask import make_response, jsonify
+
+
+class PageInfo(object):
+    def __init__(self, ins, page, number):
+        self.ins = ins
+        self.page = page if page > 0 else 1
+        self.number = number
+        self.pages = self._pages
+
+    @property
+    def _pages(self):
+        if self.number == -1:
+            return 1
+        length = len(self.ins)
+        if length % self.number == 0:
+            return length // self.number
+        return length // self.number + 1
+
+    @property
+    def data(self):
+        if self.number == -1:
+            return self.ins
+        pages = self.pages
+        if self.page > pages:
+            self.page = pages
+        return self.ins[(self.page - 1) * self.number:self.page * self.number]
 
 
 class HTTPResponse(object):
-    NORMAL_STATUS = '200'
-    USER_IS_CONFIRMED = '305'
-    FORM_VALIDATE_ERROR = '305'
+    OK = 200
+    BAD_REQUEST = 400
+    UNAUTHORIZED = 401
+    FORBIDDEN = 403
+    NOT_FOUND = 404
+    SERVER_ERROR = 500
 
-    FORBIDDEN = '403'
-    HTTP_PARA_ERROR = '401'
-    HTTP_NOT_FOUNT = '404'
-
-    STATUS_DESCRIPTION = {
-        NORMAL_STATUS: 'normal',
-        USER_IS_CONFIRMED:
-        _('Your account has been confirmed,don\'t need again'),
-        FORM_VALIDATE_ERROR: _('Form validate error'),
-        FORBIDDEN: _('You have no permission!'),
-        HTTP_PARA_ERROR: 'params error',
-        HTTP_NOT_FOUNT: '404',
-    }
-
-    def __init__(self,
-                 status='200',
-                 message='',
-                 data='',
-                 description='',
-                 pageinfo=''):
-        self.status = status
-        self.message = message or self.STATUS_DESCRIPTION.get(status)
+    def __init__(self, status_code=200, message="", data=None, pageinfo=None):
+        self.status_code = status_code
+        self.message = message
         self.data = data
-        self.description = description
         self.pageinfo = pageinfo
 
     def to_dict(self):
-        response = {
-            'status': self.status,
-            'message': self.message,
-            'data': self.data,
-            'description': self.description,
+        return {
+            "status_code": self.status_code,
+            "message": self.message,
+            "data": self.data,
+            "pageinfo": self.pageinfo
         }
-        if self.pageinfo:
-            response.update(pageinfo=self.pageinfo.as_dict())
-        return response
 
     def to_response(self):
-        response = self.to_dict()
-        return jsonify(response)
+        resp = dict(message=self.message)
+        if self.data is not None:
+            resp.update(data=self.data)
+        if self.pageinfo is not None:
+            resp.update(pageinfo=self.pageinfo)
+        return make_response(jsonify(**resp), self.status_code)
+
+
+class HTTP(object):
+    @classmethod
+    def OK(cls, message="ok", data=None, pageinfo=None):
+        return HTTPResponse(
+            HTTPResponse.OK,
+            message,
+            data,
+            pageinfo,
+        ).to_response()
+
+    @classmethod
+    def BAD_REQUEST(cls, message="bad request", data=None):
+        return HTTPResponse(
+            HTTPResponse.BAD_REQUEST,
+            message,
+            data,
+        ).to_response()
+
+    @classmethod
+    def UNAUTHORIZED(cls, message="unauthorized", data=None):
+        return HTTPResponse(
+            HTTPResponse.UNAUTHORIZED,
+            message,
+            data,
+        ).to_response()
+
+    @classmethod
+    def FORBIDDEN(cls, message="forbidden", data=None):
+        return HTTPResponse(
+            HTTPResponse.FORBIDDEN,
+            message,
+            data,
+        ).to_response()
+
+    @classmethod
+    def NOT_FOUND(cls, message="not found", data=None):
+        return HTTPResponse(
+            HTTPResponse.NOT_FOUND,
+            message,
+            data,
+        ).to_response()
+
+    @classmethod
+    def SERVER_ERROR(cls, message="internal server error", data=None):
+        return HTTPResponse(
+            HTTPResponse.SERVER_ERROR,
+            message,
+            data,
+        ).to_response()

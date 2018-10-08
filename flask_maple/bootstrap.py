@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: bootstrap.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update: 星期五 2018-02-23 12:00:12 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************

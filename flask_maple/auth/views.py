@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: views.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update: Sunday 2018-03-11 16:13:15 (CST)
+# Last Update: Monday 2018-10-08 17:46:32 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -20,7 +20,7 @@ from flask_login import current_user, login_required
 from flask_babel import gettext as _
 from flask_maple.serializer import Serializer
 from flask_maple.models import db
-from flask_maple.response import HTTPResponse
+from flask_maple.response import HTTP
 
 User = db.Model._decl_class_registry['User']
 
@@ -55,22 +55,16 @@ def check_params(keys):
             for key in keys:
                 if not post_data.get(key):
                     msg = _('The %(key)s is required', key=babel[key])
-                    return HTTPResponse(
-                        HTTPResponse.HTTP_PARA_ERROR,
-                        message=msg).to_response()
+                    return HTTP.BAD_REQUEST(message=msg)
                 if not length.get(key, lambda value: True)(post_data[key]):
                     msg = _(
                         "The %(key)s's length must be between 4 to 20 characters",
                         key=babel[key])
-                    return HTTPResponse(
-                        HTTPResponse.HTTP_PARA_ERROR,
-                        message=msg).to_response()
+                    return HTTP.BAD_REQUEST(message=msg)
             captcha = post_data['captcha']
             if captcha.lower() != session.pop('captcha', '00000').lower():
                 msg = _('The captcha is error')
-                return HTTPResponse(
-                    HTTPResponse.HTTP_PARA_ERROR,
-                    message=msg).to_response()
+                return HTTP.BAD_REQUEST(message=msg)
             return func(*args, **kwargs)
 
         return decorator
@@ -93,13 +87,12 @@ class LoginView(MethodView):
         user = User.query.filter_by(username=username).first()
         if not user or not user.check_password(password):
             msg = _('Username or Password Error')
-            return HTTPResponse(
-                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+            return HTTP.BAD_REQUEST(message=msg)
         user.login(remember)
         serializer = user.serializer() if hasattr(
-            user, 'serializer') else Serializer(user, depth=1)
-        return HTTPResponse(
-            HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
+            user, 'serializer') else Serializer(
+                user, depth=1)
+        return HTTP.OK(data=serializer.data)
 
 
 class LogoutView(MethodView):
@@ -122,12 +115,10 @@ class RegisterView(MethodView):
         email = post_data['email']
         if User.query.filter_by(email=email).exists():
             msg = _('The email has been registered')
-            return HTTPResponse(
-                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+            return HTTP.BAD_REQUEST(message=msg)
         if User.query.filter_by(username=username).exists():
             msg = _('The username has been registered')
-            return HTTPResponse(
-                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+            return HTTP.BAD_REQUEST(message=msg)
         user = User(username=username, email=email)
         user.set_password(password)
         user.save()
@@ -135,9 +126,9 @@ class RegisterView(MethodView):
         self.send_email(user)
         flash(_('An email has been sent to your.Please receive'))
         serializer = user.serializer() if hasattr(
-            user, 'serializer') else Serializer(user, depth=1)
-        return HTTPResponse(
-            HTTPResponse.NORMAL_STATUS, data=serializer.data).to_response()
+            user, 'serializer') else Serializer(
+                user, depth=1)
+        return HTTP.OK(data=serializer.data)
 
     def send_email(self, user):
         token = user.email_token
@@ -161,8 +152,7 @@ class ForgetView(MethodView):
         user = User.query.filter_by(email=email).first()
         if not user:
             msg = _('The email is error')
-            return HTTPResponse(
-                HTTPResponse.HTTP_PARA_ERROR, message=msg).to_response()
+            return HTTP.BAD_REQUEST(message=msg)
         password = ''.join(sample(ascii_letters + digits, 8))
         user.set_password(password)
         user.save()
@@ -170,7 +160,7 @@ class ForgetView(MethodView):
         flash(
             _('An email has been sent to you.'
               'Please receive and update your password in time'))
-        return HTTPResponse(HTTPResponse.NORMAL_STATUS).to_response()
+        return HTTP.OK()
 
     def send_email(self, user, password):
         html = render_template('templet/forget.html', confirm_url=password)
@@ -183,12 +173,10 @@ class ConfirmView(MethodView):
 
     def post(self):
         if current_user.is_confirmed:
-            return HTTPResponse(HTTPResponse.USER_IS_CONFIRMED).to_response()
+            return HTTP.BAD_REQUEST(message=_("user has been confirmed."))
         self.send_email(current_user)
-        return HTTPResponse(
-            HTTPResponse.NORMAL_STATUS,
-            description=_(
-                'An email has been sent to your.Please receive')).to_response()
+        return HTTP.OK(
+            message=_('An email has been sent to your.Please receive'))
 
     def send_email(self, user):
         token = user.email_token

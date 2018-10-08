@@ -4,9 +4,9 @@
 # Copyright © 2017 jianglin
 # File Name: test_serializer.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2017-12-25 16:17:40 (CST)
-# Last Update:星期五 2018-01-05 00:40:54 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
 #          By:
 # Description:
 # **************************************************************************

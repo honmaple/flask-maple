@@ -3,9 +3,9 @@
 # *************************************************************************
 #   Copyright © 2015 JiangLin. All rights reserved.
 #   Author:JiangLin
-#   Mail:xiyang0807@gmail.com
+#   Mail:mail@honmaple.com
 #   Created Time: 2016-03-28 15:52:43
-#   Last Update:星期四 2016-7-7 21:14:54 (CST)
+#   Last Update: Wednesday 2018-09-26 10:52:50 (CST)
 # *************************************************************************
 import sys
 import os

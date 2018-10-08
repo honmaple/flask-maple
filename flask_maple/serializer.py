@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: serializer.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update:星期二 2018-01-09 13:17:46 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
 #          By:
 # Description:
 # **************************************************************************

@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: middleware.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-11-12 11:56:09 (CST)
-# Last Update:星期二 2017-12-12 15:22:55 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
 #          By:
 # Description:
 # **************************************************************************

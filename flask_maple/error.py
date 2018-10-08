@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: error.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-05-18 16:34:19 (CST)
-# Last Update:星期三 2017-5-10 14:30:7 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
 #          By:
 # Description:
 # **************************************************************************

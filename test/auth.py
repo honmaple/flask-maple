@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: auth.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-11-01 20:32:54 (CST)
-# Last Update: Sunday 2018-03-11 15:41:47 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
 #          By:
 # Description:
 # **************************************************************************

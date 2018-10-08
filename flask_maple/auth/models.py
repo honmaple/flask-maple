@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: models.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-12-07 13:12:42 (CST)
-# Last Update: Sunday 2018-03-11 14:47:52 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:50 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -19,15 +19,13 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_maple.models import ModelMixin, db
 from flask_maple.mail import MailMixin
-from flask_maple.permission.models import UserMixin as PermUserMixin
-from flask_maple.permission.models import GroupMixin as PermGroupMixin
 
 user_group = db.Table(
     'user_group', db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('group_id', db.Integer, db.ForeignKey('group.id')))
 
 
-class GroupMixin(PermGroupMixin, ModelMixin):
+class GroupMixin(ModelMixin):
     @declared_attr
     def id(cls):
         return db.Column(db.Integer, primary_key=True)
@@ -54,9 +52,10 @@ class GroupMixin(PermGroupMixin, ModelMixin):
         child_groups = self.child_groups.all()
         depth -= 1
         if depth > 0:
-            child_groups.extend([g
-                                 for group in child_groups
-                                 for g in group.get_child_groups(depth)])
+            child_groups.extend([
+                g for group in child_groups
+                for g in group.get_child_groups(depth)
+            ])
         return list(set(child_groups))
 
     def __str__(self):
@@ -66,7 +65,7 @@ class GroupMixin(PermGroupMixin, ModelMixin):
         return '<Group %r>' % self.name
 
 
-class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
+class UserMixin(_UserMixin, MailMixin, ModelMixin):
     @declared_attr
     def id(cls):
         return db.Column(db.Integer, primary_key=True)
@@ -104,8 +103,7 @@ class UserMixin(PermUserMixin, _UserMixin, MailMixin, ModelMixin):
         return db.relationship(
             'Group',
             secondary=user_group,
-            backref=db.backref(
-                'users', lazy='dynamic'),
+            backref=db.backref('users', lazy='dynamic'),
             lazy='dynamic')
 
     def set_password(self, raw_password):

@@ -1,8 +1,8 @@
 # *************************************************************************
 #   Copyright © 2015 JiangLin. All rights reserved.
-#   File Name: db_create.py
+#   File Name: manager.py
 #   Author:JiangLin
-#   Mail:xiyang0807@gmail.com
+#   Mail:mail@honmaple.com
 #   Created Time: 2016-02-11 13:34:38
 # *************************************************************************
 # !/usr/bin/env python

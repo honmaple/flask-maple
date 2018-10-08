@@ -2,11 +2,11 @@
 # -*- coding=UTF-8 -*-
 # **************************************************************************
 # Copyright © 2016 jianglin
-# File Name: flask_maple_login.py
+# File Name: captcha.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-04-16 22:17:32 (CST)
-# Last Update:星期三 2017-5-10 15:25:21 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
 #          By: jianglin
 # Description: use pillow generate captcha
 # **************************************************************************

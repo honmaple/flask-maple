@@ -4,9 +4,9 @@
 # Copyright © 2016 jianglin
 # File Name: utils.py
 # Author: jianglin
-# Email: xiyang0807@gmail.com
+# Email: mail@honmaple.com
 # Created: 2016-12-07 13:16:28 (CST)
-# Last Update:星期二 2017-12-05 11:39:22 (CST)
+# Last Update: Wednesday 2018-09-26 10:52:50 (CST)
 #          By:
 # Description:
 # **************************************************************************

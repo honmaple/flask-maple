@@ -2,9 +2,9 @@
 # -*- coding=UTF-8 -*-
 # *************************************************************************
 #   Copyright © 2015 JiangLin. All rights reserved.
-#   File Name: email.py
+#   File Name: mail.py
 #   Author:JiangLin
-#   Mail:xiyang0807@gmail.com
+#   Mail:mail@honmaple.com
 #   Created Time: 2015-11-27 21:59:02
 # *************************************************************************
 from flask_mail import Mail as _Mail
