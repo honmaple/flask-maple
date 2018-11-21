@@ -38,21 +38,24 @@ class Mail(object):
 
 
 class MailMixin(object):
+    @classmethod
+    def _token_serializer(cls, key=None, salt=None):
+        config = current_app.config
+        if key is None:
+            key = config.setdefault('SECRET_KEY', gen_secret_key(24))
+        if salt is None:
+            salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
+        return URLSafeTimedSerializer(key, salt=salt)
+
     @property
     def email_token(self):
-        config = current_app.config
-        secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
-        salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
-        serializer = URLSafeTimedSerializer(secret_key, salt=salt)
+        serializer = self._token_serializer()
         token = serializer.dumps(self.email)
         return token
 
     @classmethod
     def check_email_token(cls, token, max_age=259200):
-        config = current_app.config
-        secret_key = config.setdefault('SECRET_KEY', gen_secret_key(24))
-        salt = config.setdefault('SECRET_KEY_SALT', gen_secret_key(24))
-        serializer = URLSafeTimedSerializer(secret_key, salt=salt)
+        serializer = cls._token_serializer()
         try:
             email = serializer.loads(token, max_age=max_age)
         except BadSignature:

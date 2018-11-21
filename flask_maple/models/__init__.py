@@ -6,10 +6,11 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-11-13 20:50:22 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:50 (CST)
+# Last Update: Wednesday 2018-11-21 10:26:53 (CST)
 #          By:
 # Description:
 # **************************************************************************
+from flask import abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -21,6 +22,7 @@ from sqlalchemy.sql import operators, extract
 from sqlalchemy.ext.declarative import declared_attr
 from datetime import datetime
 from flask_maple.serializer import Serializer
+from flask_maple.response import HTTP
 
 
 class DoesNotExist(Exception):
@@ -38,9 +40,9 @@ class ObjectDoesNotExist(Exception):
 class QueryMixin(BaseQuery):
     _underscore_operators = {
         'gt': operators.gt,
-        'lte': operators.lt,
+        'lt': operators.lt,
         'gte': operators.ge,
-        'le': operators.le,
+        'lte': operators.le,
         'contains': operators.contains_op,
         'in': operators.in_op,
         'exact': operators.eq,
@@ -161,6 +163,23 @@ class QueryMixin(BaseQuery):
             obj.save()
         return obj
 
+    def get_or_404(self, message=None):
+        obj = self.first()
+        if not obj:
+            resp = 404 if message is None else HTTP.NOT_FOUND(message)
+            abort(resp)
+        return obj
+
+    def get_one_or_404(self, message=None):
+        resp = 404 if message is None else HTTP.NOT_FOUND(message)
+        try:
+            obj = self.one()
+        except (NoResultFound, MultipleResultsFound):
+            abort(resp)
+        if not obj:
+            abort(resp)
+        return obj
+
     # def one(self):
     #     return super(QueryMixin, self).one()
 
@@ -183,6 +202,7 @@ class ModelMixin(object):
         if not self.id:
             db.session.add(self)
         db.session.commit()
+        return self
 
     def delete(self):
         db.session.delete(self)
@@ -220,17 +240,6 @@ class ModelMixin(object):
         db.session.commit()
         return b
 
-    def get_choice_display(self, column, choice):
-        if not hasattr(self, column):
-            raise ValueError("%s object have no column %s" %
-                             (self.__class__.__name__, column))
-        if not hasattr(self, choice):
-            raise ValueError("%s object have no choice %s" %
-                             (self.__class__.__name__, choice))
-        choice = dict(getattr(self, choice))
-        value = getattr(self, column)
-        return choice.get(value, value)
-
     @classmethod
     def get_one(cls, **filter_dict):
         return cls.query.filter_by(**filter_dict).one()
@@ -239,23 +248,6 @@ class ModelMixin(object):
     def get(cls, **filter_dict):
         instance = cls.query.filter_by(**filter_dict).first()
         return instance
-
-    @classmethod
-    def get_list(cls,
-                 page=1,
-                 number=20,
-                 filter_dict=dict(),
-                 sort_tuple=tuple()):
-        if not sort_tuple:
-            order_by = None
-            if hasattr(cls, '__mapper_args__'):
-                order_by = getattr(cls, '__mapper_args__').get('order_by')
-            if order_by is not None:
-                sort_tuple = (order_by, )
-            else:
-                sort_tuple = ('id', )
-        return cls.query.filter_by(
-            **filter_dict).order_by(*sort_tuple).paginate(page, number, True)
 
 
 class ModelTimeMixin(ModelMixin):
@@ -272,9 +264,8 @@ class ModelTimeMixin(ModelMixin):
 class ModelUserMixin(ModelTimeMixin):
     @declared_attr
     def user_id(cls):
-        return db.Column(
-            db.Integer, db.ForeignKey(
-                'user.id', ondelete="CASCADE"))
+        return db.Column(db.Integer,
+                         db.ForeignKey('user.id', ondelete="CASCADE"))
 
     @declared_attr
     def user(cls):
@@ -285,7 +276,6 @@ class ModelUserMixin(ModelTimeMixin):
             name = cls.user_related_name
         return db.relationship(
             'User',
-            backref=db.backref(
-                name, cascade='all,delete', lazy='dynamic'),
+            backref=db.backref(name, cascade='all,delete', lazy='dynamic'),
             uselist=False,
             lazy='joined')

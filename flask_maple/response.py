@@ -6,11 +6,11 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-10-28 19:53:26 (CST)
-# Last Update: Monday 2018-10-08 17:34:05 (CST)
+# Last Update: Wednesday 2018-11-21 10:31:23 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from flask import make_response, jsonify
+from flask import make_response, jsonify, render_template
 
 
 class PageInfo(object):
@@ -119,3 +119,7 @@ class HTTP(object):
             message,
             data,
         ).to_response()
+
+    @classmethod
+    def HTML(cls, template, **kwargs):
+        return render_template(template, **kwargs)

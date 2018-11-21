@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-10-28 19:56:36 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
+# Last Update: Wednesday 2018-11-21 10:44:25 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -16,7 +16,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from datetime import datetime
 from .serializer import Column, Serializer, PageInfo
-from .utils import get_one_object
+from flask_maple.response import HTTP
 
 
 def is_admin(func):
@@ -51,10 +51,14 @@ class MethodView(_MethodView):
     def _set_releation_columns(self, instance, post_data):
         _self = self._self
         relation_columns = _self.column.relation_columns
-        to_one_columns = [column for column in relation_columns
-                          if column.direction.name.endswith('ONE')]
-        to_many_columns = [column for column in relation_columns
-                           if column.direction.name.endswith('MANY')]
+        to_one_columns = [
+            column for column in relation_columns
+            if column.direction.name.endswith('ONE')
+        ]
+        to_many_columns = [
+            column for column in relation_columns
+            if column.direction.name.endswith('MANY')
+        ]
         for column in to_one_columns:
             relation_model = column.mapper.class_
             if column.key in post_data:
@@ -76,7 +80,7 @@ class MethodView(_MethodView):
 class ItemListView(MethodView):
     def get(self):
         _self = self._self
-        query_dict = request.args.to_dict()
+        query_dict = request.data
         page, number = self.pageinfo
         filter_params = _self.get_filter_params(query_dict)
         orderby_params = _self.get_orderby_params(query_dict)
@@ -84,10 +88,10 @@ class ItemListView(MethodView):
                                         number)
         serializer = _self.serializer(instances)
         pageinfo = PageInfo(instances).as_dict()
-        return jsonify(data=serializer.data, pageinfo=pageinfo)
+        return HTTP.OK(data=serializer.data, pageinfo=pageinfo)
 
     def post(self):
-        post_data = request.form.to_dict()
+        post_data = request.data
         nullable_columns = self._self.column.nullable_columns
         unique_columns = self._self.column.unique_columns
         notnullable_columns = self._self.column.notnullable_columns
@@ -106,38 +110,32 @@ class ItemListView(MethodView):
             column.name: post_data.get(column.name)
             for column in notnullable_columns
         }
-        params.update(**{
-            column.name: post_data.get(column.name)
-            for column in nullable_columns if column.name in post_data
-        })
+        params.update(
+            **{
+                column.name: post_data.get(column.name)
+                for column in nullable_columns if column.name in post_data
+            })
 
         instance = self._self.model(**params)
         self._set_releation_columns(instance, post_data)
         instance.save()
         serializer = self._self.serializer(instance)
-        return jsonify(data=serializer.data)
+        return HTTP.OK(data=serializer.data)
 
 
 class ItemView(MethodView):
     def get(self, pk):
-        has_instance, response = get_one_object(self._self.model, {
+        ins = self._self.model.query.filter_by(**{
             self._self.pk: pk
-        })
-        if not has_instance:
-            return response
-        instance = response
-        serializer = self._self.serializer(instance)
-        return jsonify(data=serializer.data)
+        }).get_or_404()
+        serializer = self._self.serializer(ins)
+        return HTTP.OK(data=serializer.data)
 
     def put(self, pk):
-        # post_data = request.json
-        post_data = request.form.to_dict()
-        has_instance, response = get_one_object(self._self.model, {
+        post_data = request.data
+        ins = self._self.model.query.filter_by(**{
             self._self.pk: pk
-        })
-        if not has_instance:
-            return response
-        instance = response
+        }).get_or_404()
         needed_columns = set(self._self.column.columns) ^ set(
             self._self.column.primary_columns) ^ set(
                 self._self.column.foreign_keys)
@@ -145,24 +143,22 @@ class ItemView(MethodView):
         for column in needed_columns:
             param = post_data.pop(column.name, None)
             if param is not None:
-                setattr(instance, column.name,
-                        datetime.strptime(param, '%Y-%m-%d %H:%M:%S')
-                        if column in datetime_columns else param)
-        self._set_releation_columns(instance, post_data)
-        instance.save()
-        serializer = self._self.serializer(instance)
-        return jsonify(data=serializer.data)
+                setattr(
+                    ins, column.name,
+                    datetime.strptime(param, '%Y-%m-%d %H:%M:%S')
+                    if column in datetime_columns else param)
+        self._set_releation_columns(ins, post_data)
+        ins.save()
+        serializer = self._self.serializer(ins)
+        return HTTP.OK(data=serializer.data)
 
     def delete(self, pk):
-        has_instance, response = get_one_object(self._self.model, {
+        ins = self._self.model.query.filter_by(**{
             self._self.pk: pk
-        })
-        if not has_instance:
-            return response
-        instance = response
-        serializer = self._self.serializer(instance)
-        instance.delete()
-        return jsonify(data=serializer.data)
+        }).get_or_404()
+        serializer = self._self.serializer(ins)
+        ins.delete()
+        return HTTP.OK(data=serializer.data)
 
 
 class IsAuthMethodView(MethodView):
@@ -221,25 +217,27 @@ class QuickView(object):
         self.column = Column(model)
 
     def get_filter_params(self, params):
-        alias = self.alias.get('get', {
-            column.name: column.name
-            for column in self.column.columns
-        })
+        alias = self.alias.get(
+            'get',
+            {column.name: column.name
+             for column in self.column.columns})
         return {
             alias[key]: value
             for key, value in params.items() if key in alias
         }
 
     def get_orderby_params(self, params):
-        alias = self.alias.get('orderby', {
-            column.name: column.name
-            for column in self.column.columns
-        })
+        alias = self.alias.get(
+            'orderby',
+            {column.name: column.name
+             for column in self.column.columns})
         orderby = params.get('orderby', '').split(',')
         desc = params.get('desc', '1').ljust(len(orderby), '1')
-        return ['-{}'.format(alias[order])
-                if desc[orderby.index(order)] == '1' else alias[order]
-                for order in orderby if order in alias]
+        return [
+            '-{}'.format(alias[order])
+            if desc[orderby.index(order)] == '1' else alias[order]
+            for order in orderby if order in alias
+        ]
 
     def get_instances(self, filter_params, orderby_params, page, number):
         return self.model.query.filter_by(
@@ -249,12 +247,14 @@ class QuickView(object):
     def itemlistview(self):
         class new(ItemListView):
             decorators = self.decorators
+
         return new
 
     @property
     def itemview(self):
         class new(ItemView):
             decorators = self.decorators
+
         return new
 
     @property
@@ -264,5 +264,5 @@ class QuickView(object):
     @property
     def url(self):
         prefix_url = self.router.get('prefix_url', '/api')
-        return self.router.get('url', '{}/{}'.format(
-            prefix_url, self.model.__table__.name))
+        return self.router.get(
+            'url', '{}/{}'.format(prefix_url, self.model.__table__.name))

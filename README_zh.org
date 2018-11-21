@@ -404,7 +404,7 @@ python setup.py install
           css=('styles/monokai.css', 'styles/mine.css'),
           js=('styles/upload.js', 'styles/forums.js', 'styles/following.js',
               'styles/topic.js'),
-          use_auth=True)
+          auth=True)
     #+END_SRC
 
     或者

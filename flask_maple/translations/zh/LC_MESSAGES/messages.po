@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  flask-maple\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-12-13 11:31+0800\n"
+"POT-Creation-Date: 2018-10-09 10:16+0800\n"
 "PO-Revision-Date: 2016-07-07 21:16+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
@@ -16,19 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.1\n"
-
-#: ../flask_maple/response.py:29
-msgid "Your account has been confirmed,don't need again"
-msgstr "你的账户已经验证，不能重复验证"
-
-#: ../flask_maple/response.py:30
-msgid "Form validate error"
-msgstr "表单验证错误"
-
-#: ../flask_maple/response.py:31
-msgid "You have no permission!"
-msgstr "你没有权限!"
+"Generated-By: Babel 2.6.0\n"
 
 #: ../flask_maple/auth/views.py:32
 msgid "You have logined in ,needn't login again"
@@ -56,50 +44,54 @@ msgstr "验证码"
 msgid "The %(key)s is required"
 msgstr "%(key)s不能为空"
 
-#: ../flask_maple/auth/views.py:62
+#: ../flask_maple/auth/views.py:60
 #, python-format
 msgid "The %(key)s's length must be between 4 to 20 characters"
 msgstr "%(key)s的长度必须为4到20个字符"
 
-#: ../flask_maple/auth/views.py:70
+#: ../flask_maple/auth/views.py:66
 msgid "The captcha is error"
 msgstr "验证码错误"
 
-#: ../flask_maple/auth/views.py:95
+#: ../flask_maple/auth/views.py:89
 msgid "Username or Password Error"
 msgstr "用户名或密码错误"
 
-#: ../flask_maple/auth/views.py:122
+#: ../flask_maple/auth/views.py:117
 msgid "The email has been registered"
 msgstr "邮箱已被注册"
 
-#: ../flask_maple/auth/views.py:126
+#: ../flask_maple/auth/views.py:120
 msgid "The username has been registered"
 msgstr "用户名已被注册"
 
-#: ../flask_maple/auth/views.py:134 ../flask_maple/auth/views.py:186
+#: ../flask_maple/auth/views.py:127 ../flask_maple/auth/views.py:179
 msgid "An email has been sent to your.Please receive"
 msgstr "一封邮件已发送到你的邮箱，请查收"
 
-#: ../flask_maple/auth/views.py:142 ../flask_maple/auth/views.py:194
+#: ../flask_maple/auth/views.py:138 ../flask_maple/auth/views.py:186
 msgid "Please confirm  your email"
 msgstr "请验证你的邮箱"
 
-#: ../flask_maple/auth/views.py:159
+#: ../flask_maple/auth/views.py:154
 msgid "The email is error"
 msgstr "邮箱未注册"
 
-#: ../flask_maple/auth/views.py:167
+#: ../flask_maple/auth/views.py:161
 msgid ""
 "An email has been sent to you.Please receive and update your password in "
 "time"
 msgstr "一封邮件已发送到你的邮箱,请及时查收"
 
-#: ../flask_maple/auth/views.py:202
+#: ../flask_maple/auth/views.py:176
+msgid "user has been confirmed."
+msgstr ""
+
+#: ../flask_maple/auth/views.py:194
 msgid "The confirm link has been out of time.Please confirm your email again"
 msgstr "验证链接已过期,请重新验证你的帐号"
 
-#: ../flask_maple/auth/views.py:207
+#: ../flask_maple/auth/views.py:199
 msgid "The email has been confirmed. Please login."
 msgstr "邮箱已验证成功，请登陆"
 
@@ -171,4 +163,13 @@ msgstr "注册"
 
 #~ msgid "not register"
 #~ msgstr "还未注册"
+
+#~ msgid "Your account has been confirmed,don't need again"
+#~ msgstr "你的账户已经验证，不能重复验证"
+
+#~ msgid "Form validate error"
+#~ msgstr "表单验证错误"
+
+#~ msgid "You have no permission!"
+#~ msgstr "你没有权限!"
 

@@ -6,11 +6,11 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-11-01 20:32:54 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
+# Last Update: Wednesday 2018-11-21 11:31:36 (CST)
 #          By:
 # Description:
 # **************************************************************************
-from main import app, manager, db
+from main import app, db
 from flask_maple.auth.views import Auth
 from flask_maple.bootstrap import Bootstrap
 from flask_maple.captcha import Captcha
@@ -42,7 +42,7 @@ def user_loader(id):
     return user
 
 
-bootstrap = Bootstrap(app, use_auth=True)
+bootstrap = Bootstrap(app, auth=True)
 
 if __name__ == '__main__':
-    manager.run()
+    app.run()

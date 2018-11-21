@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-12-07 12:59:40 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:49 (CST)
+# Last Update: Wednesday 2018-11-21 13:38:08 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -47,7 +47,7 @@ def create_app(config=None):
 app = create_app(Config())
 Auth(app)
 LoginManager(app)
-Bootstrap(app, use_auth=True)
+Bootstrap(app, auth=True)
 CsrfProtect(app)
 Captcha(app)
 

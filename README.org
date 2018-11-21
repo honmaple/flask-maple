@@ -1,6 +1,6 @@
 * Flask-Maple
 
-  [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/pypi-v0.5.3-brightgreen.svg]]
+  [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/pypi-v0.5.5-brightgreen.svg]]
   [[https://pypi.python.org/pypi/Flask-Maple][https://img.shields.io/badge/python-3.4-brightgreen.svg]]
   [[LICENSE][https://img.shields.io/badge/license-BSD-blue.svg]]
 
@@ -43,7 +43,7 @@ python setup.py install
 
    *Config:*
    #+BEGIN_SRC python
-    AUTHOR_NAME = "This will show you name at html footer"
+    FOOTER_MESSAGE = "This will show you name at html footer"
    #+END_SRC
 
 ** Captcha

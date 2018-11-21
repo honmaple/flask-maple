@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-04-16 23:43:21 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:49 (CST)
+# Last Update: Wednesday 2018-11-21 13:38:08 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -40,7 +40,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 maplec = Captcha(app)
-mapleb = Bootstrap(app, use_auth=True)
+mapleb = Bootstrap(app, auth=True)
 mail = Mail(app)
 babel = Babel(app)
 

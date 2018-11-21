@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-10-28 23:16:14 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
+# Last Update: Wednesday 2018-11-21 10:32:45 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -18,7 +18,6 @@ except ImportError:
 
 class Redis(object):
     def __init__(self, app=None):
-        self.app = app
         if app is not None:
             self.init_app(app)
 

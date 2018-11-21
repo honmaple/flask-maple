@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-04-18 16:03:01 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:51 (CST)
+# Last Update: Wednesday 2018-11-21 10:22:36 (CST)
 #          By: jianglin
 # Description: a sample way to use bootstrap
 # **************************************************************************
@@ -15,14 +15,13 @@ from flask_assets import Environment, Bundle
 
 
 class Bootstrap(object):
-    def __init__(self, app=None, js=None, css=None, use_auth=False):
+    def __init__(self, app=None, js=None, css=None, auth=False):
         '''
-        use_auth: if `True`, add login.js to assets
+        auth: if `True`, add login.js to assets
         '''
         self.js = js
         self.css = css
-        self.use_auth = use_auth
-        self.app = app
+        self.auth = auth
         if app is not None:
             self.init_app(app)
 
@@ -43,28 +42,23 @@ class Bootstrap(object):
 
     def assets(self, app):
         bundles = {
-            'home_js': Bundle(
-                output='assets/home.js', filters='jsmin'),
-            'home_css': Bundle(
+            'home_js':
+            Bundle(output='assets/home.js', filters='jsmin'),
+            'home_css':
+            Bundle(
                 'bootstrap/css/honmaple.css',
                 output='assets/home.css',
                 filters='cssmin')
         }
-        if self.use_auth:
-            auth_js = ('bootstrap/js/login.js',)
-            bundles['home_js'].contents += auth_js
+        if self.auth:
+            bundles['home_js'].contents += ('bootstrap/js/login.js', )
         if self.css:
             bundles['home_css'].contents += self.css
         if self.js:
             bundles['home_js'].contents += self.js
 
-        assets = Environment(app)
-        assets.register(bundles)
+        Environment(app).register(bundles)
 
     def filters(self, app):
-        author_name = app.config.get('AUTHOR_NAME', 'honmaple')
-
-        def show_footer(author=author_name):
-            return author
-
-        app.jinja_env.globals['show_footer'] = show_footer
+        msg = app.config.get('FOOTER_MESSAGE', '')
+        app.jinja_env.globals['FOOTER_MESSAGE'] = msg

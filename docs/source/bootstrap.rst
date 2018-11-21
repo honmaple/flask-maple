@@ -31,7 +31,7 @@ If you want use maple auth extension,you need set
 
 .. code-block:: python
 
-    Bootstrap(app,use_auth=True)
+    Bootstrap(app,auth=True)
 
 But before it,you need register csrf,beacuse ajax need csrf.
 

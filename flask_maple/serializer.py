@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-10-28 19:52:57 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
+# Last Update: Thursday 2018-10-25 13:34:30 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -19,27 +19,26 @@ from flask_sqlalchemy import Pagination
 class Column(object):
     def __init__(self, model):
         self.inp = inspect(model)
-
-    @property
-    def columns(self):
-        return self.inp.columns
+        self.columns = self.inp.columns
 
     @property
     def primary_columns(self):
-        return [column for column in self.inp.columns if column.primary_key]
+        return [column for column in self.columns if column.primary_key]
 
     @property
     def nullable_columns(self):
-        return [column for column in self.inp.columns if column.nullable]
+        return [column for column in self.columns if column.nullable]
 
     @property
     def notnullable_columns(self):
-        return [column for column in self.inp.columns
-                if not column.nullable and not column.primary_key]
+        return [
+            column for column in self.columns
+            if not column.nullable and not column.primary_key
+        ]
 
     @property
     def unique_columns(self):
-        return [column for column in self.inp.columns if column.unique]
+        return [column for column in self.columns if column.unique]
 
     @property
     def relation_columns(self):
@@ -47,18 +46,22 @@ class Column(object):
 
     @property
     def datetime_columns(self):
-        return [column for column in self.inp.columns
-                if isinstance(column.type, DateTime)]
+        return [
+            column for column in self.columns
+            if isinstance(column.type, DateTime)
+        ]
 
     @property
     def integer_columns(self):
-        return [column for column in self.inp.columns
-                if isinstance(column.type, Integer)]
+        return [
+            column for column in self.columns
+            if isinstance(column.type, Integer)
+        ]
 
     @property
     def foreign_keys(self):
         columns = []
-        [columns.extend(list(column.foreign_keys)) for column in self.inp.columns]
+        [columns.extend(list(column.foreign_keys)) for column in self.columns]
         return [i.parent for i in columns]
 
 

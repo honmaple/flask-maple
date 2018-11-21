@@ -21,7 +21,7 @@
 
    Anyway,If you want use maple auth extension,you need set
     #+BEGIN_SRC python
-    Bootstrap(app,use_auth=True)
+    Bootstrap(app,auth=True)
     #+END_SRC
 
 

@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2018-09-04 18:26:49 (CST)
-# Last Update: Monday 2018-10-08 17:09:32 (CST)
+# Last Update: Wednesday 2018-11-21 11:13:25 (CST)
 #          By:
 # Description:
 # ********************************************************************************
@@ -230,9 +230,8 @@ class PermissionMixin(ModelMixin):
     @classmethod
     def resources(cls, resource_type="endpoint"):
         return [
-            i.resource
-            for i in cls.query.filter_by(resource_type=resource_type).group_by(
-                cls.resource)
+            i.resource for i in cls.query.filter_by(
+                resource_type=resource_type).group_by(cls.resource)
         ]
 
 

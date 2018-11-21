@@ -1,6 +1,11 @@
 include LICENSE
+exclude flask_maple/install.py
+exclude flask_maple/templates/maple/install.html
 recursive-include flask_maple/static *
 recursive-include flask_maple/auth *
-recursive-include flask_maple/permission *
+recursive-include flask_maple/models *
 recursive-include flask_maple/translations *
 recursive-include flask_maple/templates *.html
+global-exclude __pycache__
+global-exclude *.py[co]
+prune test

@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-04-16 22:17:32 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:52 (CST)
+# Last Update: Thursday 2018-10-25 11:43:58 (CST)
 #          By: jianglin
 # Description: use pillow generate captcha
 # **************************************************************************
@@ -17,16 +17,18 @@ from io import BytesIO
 
 
 class Captcha(object):
-    def __init__(self, app=None, font=None):
+    def __init__(self, app=None, url=None, font=None):
         self.app = app
+        self.url = url
         self.font = font
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app):
-        self.app = app
-        captcha = app.config.get('CAPTCHA_URL', 'captcha')
-        app.add_url_rule('/' + captcha, 'captcha', self._response)
+        url = app.config.get('CAPTCHA_URL', 'captcha')
+        if self.url is not None:
+            url = self.url
+        app.add_url_rule('/' + url, 'captcha', self._response)
 
     def validate(self, raw_captcha):
         captcha = session['captcha']
@@ -77,9 +79,12 @@ class GenCaptcha(object):
             strs = self.create_strs(draw, chars, length, font_type, font_size,
                                     width, height, fg_color)
 
-        params = [1 - float(randint(1, 2)) / 100, 0, 0, 0,
-                  1 - float(randint(1, 10)) / 100, float(randint(1, 2)) / 500,
-                  0.001, float(randint(1, 2)) / 500]
+        params = [
+            1 - float(randint(1, 2)) / 100, 0, 0, 0,
+            1 - float(randint(1, 10)) / 100,
+            float(randint(1, 2)) / 500, 0.001,
+            float(randint(1, 2)) / 500
+        ]
         img = img.transform(size, Image.PERSPECTIVE, params)
 
         img = img.filter(ImageFilter.EDGE_ENHANCE_MORE)

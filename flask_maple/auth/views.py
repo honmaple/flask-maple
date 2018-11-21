@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-12-07 14:01:14 (CST)
-# Last Update: Monday 2018-10-08 17:46:32 (CST)
+# Last Update: Wednesday 2018-11-21 10:49:57 (CST)
 #          By:
 # Description:
 # **************************************************************************
@@ -206,7 +206,6 @@ class ConfirmTokenView(MethodView):
 
 class Auth(object):
     def __init__(self, app=None):
-        self.app = app
         if app is not None:
             self.init_app(app)
 

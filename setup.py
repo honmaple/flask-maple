@@ -6,7 +6,7 @@
 # Author: jianglin
 # Email: mail@honmaple.com
 # Created: 2016-04-16 22:19:36 (CST)
-# Last Update: Wednesday 2018-09-26 10:52:50 (CST)
+# Last Update: Wednesday 2018-11-21 13:52:54 (CST)
 #          By: jianglin
 # Description:
 # **************************************************************************
@@ -14,7 +14,7 @@ from setuptools import setup
 
 setup(
     name='Flask-Maple',
-    version='0.5.3',
+    version='0.5.5',
     url='https://github.com/honmaple/flask-maple',
     license='BSD',
     author='honmaple',
